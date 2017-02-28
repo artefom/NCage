@@ -28,8 +28,8 @@ void GuiManager::terminate() {
 
 void GuiManager::OnResize(double width, double height) {
 
-    double resized_width = width*guiScale.x;
-    double resized_height = height*guiScale.y;
+//    double resized_width = width*guiScale.x;
+//    double resized_height = height*guiScale.y;
 
     GuiRoot.setPositionMin( Vec2d::ZERO );
     GuiRoot.setSizeMin( Vec2d(width,height) );
