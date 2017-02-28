@@ -12,6 +12,8 @@
 #include <GuiFrame.h>
 #include <GuiWindow.h>
 #include <GuiFactory.h>
+#include <stack>
+#include <GuiView.h>
 
 #include "GuiBase.h"
 
@@ -19,37 +21,42 @@ class GuiManager {
 
 public:
 
+    static std::shared_ptr< GuiView > render_view;
+
     static SafeQueue<int> input_events;
 
+    static Vec2d guiScale;
+
+    // Initialize GUI Manager
     static void Init();
 
-    static void PostInit() {
-        std::shared_ptr< GuiWindow > wnd = GuiFactory::create<GuiWindow>();
+    // Initialization AFTER background thread was created
+    static void PostInit();
 
-        wnd->setPositionMin( Vec2d( 0.2,0.2) );
-        wnd->setSizeMin(Vec2d(0.1,0.2));
-
-        GuiRoot.add(wnd);
-    };
-
+    // Enables gui
     static void display_gui();
 
+    // Disables gui
     static void hide_gui();
 
+    // Terminates gui
     static void terminate();
 
+    // Mouse Move event
     static void OnMouseMove(double x, double y);
 
+    // Mouse Down event
     static void OnMouseDown(int button, int state, double x, double y);
 
+    // Called on resize
     static void OnResize(double width, double height);;
 
-    static void draw() {
-        GuiRoot.draw();
-    }
+    // Draw call
+    static void draw();
 
+    static std::stack< std::shared_ptr<GuiBase> > clickStack;
     // Structure of gui lying beneath cursor
-    static std::vector< std::shared_ptr<GuiBase> > under_mouse;
+    static std::stack< std::shared_ptr<GuiBase> > under_mouse;
 
 private:
 

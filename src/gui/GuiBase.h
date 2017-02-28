@@ -25,6 +25,8 @@ private:
 
 public:
 
+    std::weak_ptr<GuiBase> self;
+
     Event< std::function< void( Vec2d )  > > MouseMoveEvent;
     Event< std::function< void(int, int, Vec2d ) > > MouseEvent;
     Event< std::function< void() > > AfterResizeEvent;
@@ -33,14 +35,13 @@ public:
 
     GuiBase();
 
+    inline void setSelf(std::weak_ptr<GuiBase> i_self) {
 
-    inline GuiBase *getParent() const {
-        return parent;
+        self = i_self;
+
     }
 
-    inline void setParent(GuiBase *i_parent) {
-        parent = i_parent;
-    }
+    virtual void postInit();
 
     inline Vec2d getPositionMin() const {
         return pos_min;
@@ -89,23 +90,18 @@ public:
     virtual void draw();
 
     // Mouse event in relative coordinates
-    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
-
-    }
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos);
 
     // Event when mouse moves over gui
-    virtual void OnMouseMove(Vec2d mousePos) {
+    virtual void OnMouseMove(Vec2d mousePos);
 
-    }
+    virtual void OnMouseEnter();
+
+    virtual void OnMouseLeave();
 
     // Estimates weather mouse lies within current gui
     // Mousepos is in local coordinates
-    virtual bool hasMouse(Vec2d mousepos) {
-        if (mousepos.x < getSize().x && mousepos.x > 0 &&
-            mousepos.y < getSize().y && mousepos.y > 0)
-            return true;
-        return false;
-    }
+    virtual bool hasMouse(Vec2d mousepos);
 
     virtual ~GuiBase() {};
 };

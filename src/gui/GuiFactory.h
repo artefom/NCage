@@ -7,6 +7,7 @@
 
 
 #include <memory>
+#include <iostream>
 
 class GuiFactory {
 public:
@@ -14,6 +15,10 @@ public:
     template<class T> static std::shared_ptr<T> create(){
 
         std::shared_ptr<T> ret = std::make_shared<T>();
+
+        ret->setSelf(ret);
+
+        ret->postInit();
 
         return ret;
 

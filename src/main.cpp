@@ -43,6 +43,7 @@ int main(int argc, cstring argv[]) {
     glutDisplayFunc( renderScene );
 
     glutPassiveMotionFunc( PassiveMouseMove );
+    glutMotionFunc( PassiveMouseMove );
     glutMouseFunc(MouseFunc);
 
     glutReshapeFunc( resize );
@@ -79,6 +80,7 @@ void PassiveMouseMove(int x, int y) {
     double ly = mutils::map(y,0,SCR_H,0.0,Local_H);
 
     GuiManager::OnMouseMove(lx,ly);
+
 }
 
 
@@ -106,16 +108,10 @@ void renderScene(void) {
 
     GuiManager::draw();
 
-    glBegin(GL_QUADS);
-    glColor4f(1.0f, 0.0f, 0.0,0.5);
-    glVertex2f(0, 0);
-    glVertex2f(0.1, 0);
-    glVertex2f(0.1, 0.1);
-    glVertex2f(0, 0.1);
-    glEnd();
-
     glutPostRedisplay();
     glFlush();
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 void resize(int w, int h) {
@@ -125,10 +121,10 @@ void resize(int w, int h) {
     if (h == 0)
         h = 1;
 
-    float ratio =  w * 1.0 / h;
+    //float ratio =  w * 1.0 / h;
 
-    setupProjection(w,h,1,1);
-    GuiManager::OnResize(1,1);
+    setupProjection(w,h,w,h);
+    GuiManager::OnResize(w,h);
 
 //    // Use the Projection Matrix
 //    glMatrixMode(GL_PROJECTION);

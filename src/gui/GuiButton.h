@@ -6,29 +6,91 @@
 #define PLAYIN_GUIBUTTON_H
 
 #include <constants.h>
+#include <functional>
+
 #include "GuiBase.h"
+#include "Event.h"
 
 
 class GuiButton : public GuiBase {
+
 public:
 
-    GuiButton() {
-        MouseEnterEvent.add(std::bind(&GuiButton::OnMouseEnter, this ));
-        MouseLeaveEvent.add(std::bind(&GuiButton::OnMouseLeave, this ));
+    Event< std::function< void() > > MouseClickEvent;
+
+    GuiButton( ) {
+
+        isPressed = false;
+        isHovered = false;
+
+       // MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
+//        MouseClickEvent.connect(&GuiButton::hello, this, 1);
+        //MouseClickEvent.add( std::bind(&GuiButton::OnClick, this ) );
+    }
+
+    virtual void postInit() {
+        GuiBase::postInit();
+        MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
     }
 
     virtual void draw() {
-        glColor(constatns::gui_accent_1);
+        if (isPressed && isHovered) {
+            glColor(constants::gui_button_pressed);
+        } else
+        if (!isPressed && isHovered){
+            glColor(constants::gui_button_hover);
+        } else {
+            glColor(constants::gui_frame_foreground);
+        }
+
         drawRect(Vec2d::ZERO,getSize());
+
+        glColor(constants::gui_frame_accent1);
+
+        drawHRect(Vec2d::ZERO,getSize());
+
+    }
+
+    virtual void OnClick() {
+        std::cout << "Hello, i'm button!" << std::endl;
     }
 
     virtual void OnMouseEnter() {
-        std::cout << "Mouse entered!" << std::endl;
+        isHovered = true;
     }
 
     virtual void OnMouseLeave() {
-        std::cout << "Mouse exitted!" << std::endl;
+        isHovered = false;
     }
+
+    // Mouse event in relative coordinates
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
+
+        GuiBase::OnMouseEvent(button,state,mousePos);
+        // Right mouse down
+        if (button == 0) {
+            if (state == 0) {
+                // Mouse down case
+                isPressed = true;
+            } else {
+                // Mouse up case
+
+                if (isPressed && isHovered) {
+                    MouseClickEvent();
+                }
+
+                isPressed = false;
+            }
+        }
+
+    }
+
+
+protected:
+
+    bool isPressed;
+    bool isHovered;
+
 };
 
 

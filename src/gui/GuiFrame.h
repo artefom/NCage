@@ -10,68 +10,44 @@
 #include <glutUtils.h>
 #include <memory.h>
 #include <mathUtils.h>
+#include <unordered_map>
 
 #include "constants.h"
 #include "GuiBase.h"
 
 
 class GuiFrame : public GuiBase {
-public:
+protected:
+
+    // Sub-elements of frame
+    // Order of elements in this vector is responsible
+    // for drawing order and click processing
+    // To move Gui Element on top, put it on top of this vector.
+    std::vector< std::shared_ptr<GuiBase> > children;
 
     // Gui that lies under mouse.
     std::shared_ptr<GuiBase> MouseGui;
 
-    // Sub-elements of frame
-    std::vector< std::shared_ptr<GuiBase> > children;
+    std::unordered_map< int,std::shared_ptr<GuiBase> > ClickedGuis;
+
+public:
+
+    GuiFrame() {
+
+    }
 
     // Mouse event in relative coordinates
-    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
-        for (std::shared_ptr<GuiBase> v : children) {
-            Vec2d localMpos = mutils::map(mousePos,v->getPositionMin(),v->getPositionMax(),Vec2d::ZERO,v->getSize());
-            if ( v->hasMouse(localMpos) ) {
-                std::cout << "SUCCESS!" << std::endl;
-                v->OnMouseEvent(button, state, localMpos);
-                break;
-            }
-        }
-    }
+    // Internal function (tight bounds)
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos);
+
+    virtual void OnMouseEnter();
+
+    virtual void OnMouseLeave();
 
     // Mouse event when cursor moves over current gui instance
-    virtual void OnMouseMove(Vec2d mousePos) {
-        std::shared_ptr<GuiBase> newMouseGui;
-        for (std::shared_ptr<GuiBase> v : children) {
-            Vec2d localMpos = mutils::map(mousePos,v->getPositionMin(),v->getPositionMax(),Vec2d::ZERO,v->getSize());
-            if ( v->hasMouse(localMpos) ) {
-                newMouseGui = v;
-                v->OnMouseMove(localMpos);
-                break;
-            }
-        }
+    virtual void OnMouseMove(Vec2d mousePos);
 
-        // Process MouseEnter\Exit Events.
-
-        if (newMouseGui != MouseGui) {
-            if (MouseGui) {
-                MouseGui->MouseLeaveEvent();
-            }
-            MouseGui = newMouseGui;
-            if (newMouseGui) {
-                newMouseGui->MouseEnterEvent();
-            }
-        } else MouseGui = newMouseGui;
-    }
-
-    virtual void draw() {
-        GuiBase::draw();
-        for (std::shared_ptr<GuiBase>& v : children) {
-
-            glPushMatrix();
-                glTranslate(v->getPositionMin());
-                v->draw();
-            glPopMatrix();
-
-        }
-    }
+    virtual void draw();
 
     virtual void add(std::shared_ptr<GuiBase> gui) {
         children.push_back(gui);

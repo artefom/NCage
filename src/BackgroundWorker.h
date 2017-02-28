@@ -32,7 +32,7 @@ public:
             //while (input_events.size() > 0) {
             int i = input_events.dequeue();
 
-            std::cout << "BG Message recieved: " << i << std::endl;
+            //std::cout << "BG Message recieved: " << i << std::endl;
 
             if (i == -1) terminate();
             //}

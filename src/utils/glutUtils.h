@@ -10,6 +10,7 @@
 #include <freeglut.h>
 
 #include "Vec2d.h"
+#include "mathUtils.h"
 
 class Color {
 
@@ -26,16 +27,26 @@ public:
     };
 
 
-    Color(const char* str) {
-        from_string(str);
-    }
+    Color();
 
-    Color(std::string str) {
-        from_string( str.c_str() );
+    Color(unsigned char i_r, unsigned char i_g, unsigned char i_b, unsigned char i_a = 255);
+
+    // Initialization of color by hex number in c_string
+    Color(const char* str);
+
+    // Initialization of color by hex number
+    Color(std::string str);
+
+    static Color mix(Color c1, Color c2, double alpha) {
+        unsigned char r = (unsigned char)mutils::clamp( c1.r*(1-alpha)+c2.r*alpha, 0, 255);
+        unsigned char g = (unsigned char)mutils::clamp( c1.g*(1-alpha)+c2.g*alpha, 0, 255);
+        unsigned char b = (unsigned char)mutils::clamp( c1.b*(1-alpha)+c2.b*alpha, 0, 255);
+        return Color(r,g,b);
     }
 
 private:
 
+    // Creates color from string
     inline void from_string(const char* str) {
 
         if (str == 0)
@@ -72,6 +83,15 @@ inline void glColor(Color c) {
 
 inline void glTranslate(Vec2d vec) {
     glTranslated(vec.x,vec.y,0);
+}
+
+inline void drawHRect(Vec2d p1, Vec2d p2) {
+    glBegin(GL_LINE_LOOP);
+    glVertex2d(p1.x, p1.y);
+    glVertex2d(p2.x, p1.y);
+    glVertex2d(p2.x, p2.y);
+    glVertex2d(p1.x, p2.y);
+    glEnd();
 }
 
 #endif //PLAYIN_GLUTUTILS_H

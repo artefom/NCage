@@ -18,6 +18,12 @@ namespace mutils {
         return (TO)(value - from_min) / (TO)(from_max - from_min) * (to_max - to_min) + to_min;
     };
 
+    template<class T1, class T2, class T3> inline T1 clamp(T1 value, T2 min, T3 max) {
+        if (value > max) value = (T1)max;
+        else if (value < min) value = (T1)min;
+        return value;
+    }
+
 }
 
 
