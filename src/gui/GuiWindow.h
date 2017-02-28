@@ -18,14 +18,13 @@ public:
         virtual void draw() {
             if (isPressed && isHovered) {
                 glColor(constants::gui_close_button_pressed);
-            } else
-            if (!isPressed && isHovered){
+            } else if (!isPressed && isHovered) {
                 glColor(constants::gui_close_button_hover);
             } else {
                 glColor(constants::gui_close_button);
             }
 
-            drawRect(Vec2d::ZERO,getSize());
+            drawRect(Vec2d::ZERO, getSize());
         }
     };
 
@@ -41,8 +40,8 @@ public:
         std::cout << "Gui window created!" << std::endl;
 
         dragging = false;
-        padding_top = Vec2d(4,15);
-        padding_bottom = Vec2d(4,4);
+        padding_top = Vec2d(4, 15);
+        padding_bottom = Vec2d(4, 4);
 
         closeBtn = GuiFactory::create<CloseButton>();
         add(closeBtn);
@@ -54,34 +53,35 @@ public:
 
     virtual void postInit() {
         GuiFrame::postInit();
-        closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick,self,this);
+        closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick, self, this);
     }
 
     virtual void draw() {
         glColor(constants::gui_frame_foreground);
-        drawRect(Vec2d::ZERO,getSize());
+        drawRect(Vec2d::ZERO, getSize());
         glColor(constants::gui_frame_background);
-        drawRect(workFrame->getPositionMin(),workFrame->getPositionMax());
+        drawRect(workFrame->getPositionMin(), workFrame->getPositionMax());
         glColor(constants::gui_frame_accent1);
-        drawHRect(Vec2d::ZERO,getSize());
-        drawHRect(workFrame->getPositionMin(),workFrame->getPositionMax());
+        drawHRect(Vec2d::ZERO, getSize());
+        drawHRect(workFrame->getPositionMin(), workFrame->getPositionMax());
         GuiFrame::draw();
     }
 
     virtual void afterResize() {
-        closeBtn->setSizeMin(Vec2d(padding_top.y*1.5,padding_top.y));
-        closeBtn->setPositionMin(Vec2d(getSize().x-closeBtn->getSize().x-padding_bottom.x,0));
+        closeBtn->setSizeMin(Vec2d(padding_top.y * 1.5, padding_top.y));
+        closeBtn->setPositionMin(Vec2d(getSize().x - closeBtn->getSize().x - padding_bottom.x, 0));
 
-        workFrame->setPositionMin( padding_top );
-        workFrame->setSizeMin( getSize()-padding_bottom-padding_top );
+        workFrame->setPositionMin(padding_top);
+        workFrame->setSizeMin(getSize() - padding_bottom - padding_top);
     }
 
     Vec2d dragging_pos;
     bool dragging;
-    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
-        GuiFrame::OnMouseEvent(button,state,mousePos);
 
-        if ( ClickedGuis.find(button) == ClickedGuis.end() ) {
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
+        GuiFrame::OnMouseEvent(button, state, mousePos);
+
+        if (ClickedGuis.find(button) == ClickedGuis.end()) {
             if (button == 0 && state == 0) {
                 dragging = true;
                 dragging_pos = mousePos;

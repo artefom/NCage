@@ -21,7 +21,7 @@ class GuiManager {
 
 public:
 
-    static std::shared_ptr< GuiView > render_view;
+    static std::shared_ptr<GuiView> render_view;
 
     static SafeQueue<int> input_events;
 
@@ -54,9 +54,9 @@ public:
     // Draw call
     static void draw();
 
-    static std::stack< std::shared_ptr<GuiBase> > clickStack;
+    static std::stack<std::shared_ptr<GuiBase> > clickStack;
     // Structure of gui lying beneath cursor
-    static std::stack< std::shared_ptr<GuiBase> > under_mouse;
+    static std::stack<std::shared_ptr<GuiBase> > under_mouse;
 
 private:
 

@@ -2,10 +2,7 @@
 
 #include <iostream>
 #include <freeglut.h>
-#include <functional>
 #include <thread>
-#include <mutex>
-#include <condition_variable>
 #include <queue>
 #include <mathUtils.h>
 
@@ -21,9 +18,13 @@
 using namespace std;
 
 void PassiveMouseMove(int x, int y);
+
 void renderScene(void);
+
 void resize(int w, int h);
-void MouseFunc( int button, int state, int x, int y );
+
+void MouseFunc(int button, int state, int x, int y);
+
 void glutCloseFunc();
 
 bool shouldExit = false;
@@ -34,19 +35,19 @@ int main(int argc, cstring argv[]) {
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGBA);
-    glutInitWindowPosition(100,100);
-    glutInitWindowSize(320,320);
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(320, 320);
     glutCreateWindow("Ass class destroyer");
 
     gui("Registerring mouse callbacks");
 
-    glutDisplayFunc( renderScene );
+    glutDisplayFunc(renderScene);
 
-    glutPassiveMotionFunc( PassiveMouseMove );
-    glutMotionFunc( PassiveMouseMove );
+    glutPassiveMotionFunc(PassiveMouseMove);
+    glutMotionFunc(PassiveMouseMove);
     glutMouseFunc(MouseFunc);
 
-    glutReshapeFunc( resize );
+    glutReshapeFunc(resize);
     glutIdleFunc(renderScene);
     glutCloseFunc(glutCloseFunc);
 
@@ -69,6 +70,7 @@ void glutCloseFunc() {
     GuiManager::terminate();
 
 }
+
 int SCR_W = 1;
 int SCR_H = 1;
 double Local_W = 1;
@@ -76,10 +78,10 @@ double Local_H = 1;
 
 void PassiveMouseMove(int x, int y) {
 
-    double lx = mutils::map(x,0,SCR_W,0.0,Local_W);
-    double ly = mutils::map(y,0,SCR_H,0.0,Local_H);
+    double lx = mutils::map(x, 0, SCR_W, 0.0, Local_W);
+    double ly = mutils::map(y, 0, SCR_H, 0.0, Local_H);
 
-    GuiManager::OnMouseMove(lx,ly);
+    GuiManager::OnMouseMove(lx, ly);
 
 }
 
@@ -93,7 +95,7 @@ void setupProjection(int screen_width, int screen_height, double width, double h
     Local_W = width;
     Local_H = height;
 
-    glViewport(0,0,screen_width,screen_height);
+    glViewport(0, 0, screen_width, screen_height);
     glOrtho(0.0, width, height, 0.0, -1.0, 10.0);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -123,8 +125,8 @@ void resize(int w, int h) {
 
     //float ratio =  w * 1.0 / h;
 
-    setupProjection(w,h,w,h);
-    GuiManager::OnResize(w,h);
+    setupProjection(w, h, w, h);
+    GuiManager::OnResize(w, h);
 
 //    // Use the Projection Matrix
 //    glMatrixMode(GL_PROJECTION);
@@ -142,10 +144,10 @@ void resize(int w, int h) {
 //    glMatrixMode(GL_MODELVIEW);
 }
 
-void MouseFunc( int button, int state, int x, int y ) {
+void MouseFunc(int button, int state, int x, int y) {
 
-    double new_x = mutils::map(x,0,SCR_W,0.0,Local_W);
-    double new_y = mutils::map(y,0,SCR_H,0.0,Local_H);
-    GuiManager::OnMouseDown(button,state,new_x,new_y);
+    double new_x = mutils::map(x, 0, SCR_W, 0.0, Local_W);
+    double new_y = mutils::map(y, 0, SCR_H, 0.0, Local_H);
+    GuiManager::OnMouseDown(button, state, new_x, new_y);
 
 }

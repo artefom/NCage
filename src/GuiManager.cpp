@@ -32,7 +32,7 @@ void GuiManager::OnResize(double width, double height) {
     double resized_height = height*guiScale.y;
 
     GuiRoot.setPositionMin( Vec2d::ZERO );
-    GuiRoot.setSizeMin(Vec2d(width,height));
+    GuiRoot.setSizeMin( Vec2d(width,height) );
 
     render_view->setPositionMin( Vec2d::ZERO );
     render_view->setSizeMin( Vec2d(width,height) );
