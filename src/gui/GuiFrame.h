@@ -6,7 +6,6 @@
 #define PLAYIN_GUIFRAME_H
 
 #include <vector>
-#include <freeglut.h>
 #include <glutUtils.h>
 #include <memory.h>
 #include <mathUtils.h>

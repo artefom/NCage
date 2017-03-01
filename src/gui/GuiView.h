@@ -8,6 +8,7 @@
 
 #include <glutUtils.h>
 #include <cmath>
+#include <utils/PBOTexture.h>
 #include "GuiBase.h"
 
 class GuiView : public GuiBase {
@@ -37,7 +38,11 @@ public:
 
     bool dragging;
 
-    GuiView() {
+    PBOTexture tex;
+
+    GuiView() :
+            tex(128,128)
+    {
         position = Vec2d::ZERO;
         scale = Vec2d::ONE;
         scale_min = Vec2d(0.000001,0.000001);
@@ -72,15 +77,12 @@ public:
             scale.x = mutils::clamp(scale.x,scale_min.x,scale_max.x);
             scale.y = mutils::clamp(scale.y,scale_min.y,scale_max.y);
 
-            std::cout << scale.x << std::endl;
-
             Vec2d newPos = screenToLocal(mousePos);
             position += (newPos-old_position)/scale;
         }
 
 
         if (button == 0) {
-            std::cout << "Dragging!" << std::endl;
             dragging = true;
             pressed_local_position = screenToLocal(mousePos);
         }
@@ -126,6 +128,33 @@ public:
             glEnd();
         }
 
+
+        Vec2d tex_p1 = pivot;
+        Vec2d tex_size = localToScreen(cell_size*128)-pivot;
+        Vec2d tex_p2 = tex_p1+tex_size;
+
+        // draw a point with texture
+
+        tex.updatePixels();
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, tex.textureId);
+        glColor4f(1, 1, 1, 1);
+        glBegin(GL_QUADS);
+
+        //glNormal3f(0, 0, 1);
+        glTexCoord2f(0.0f, 0.0f);   glVertex2d( tex_p1.x, tex_p1.y );
+        glTexCoord2f(1.0f, 0.0f);   glVertex2d( tex_p2.x, tex_p1.y );
+        glTexCoord2f(1.0f, 1.0f);   glVertex2d( tex_p2.x, tex_p2.y );
+        glTexCoord2f(0.0f, 1.0f);   glVertex2d( tex_p1.x, tex_p2.y );
+
+        glEnd();
+
+        // unbind texture
+        glBindTexture(GL_TEXTURE_2D, 0);
+
+        glDisable(GL_TEXTURE_2D);
+
     }
 
 
@@ -161,7 +190,7 @@ private:
             while (displayed_cell_size.x > min_displayed_cell_size_x*highlight_step) {
 
                 level -= 1;
-                if (level < -5) break;
+                if (level < 0) break;
 
                 displayed_cell_size /= highlight_step;
             }
@@ -178,7 +207,6 @@ private:
 
         // Draw vertical lines
         {
-            //int index = -(int)( pivot.x / displayed_cell_size.x );
             double begin = (double) std::fmod(pivot.x, displayed_cell_size.x);
             if (begin < 0) begin += displayed_cell_size.x;
             double end = getSize().x;
@@ -189,12 +217,6 @@ private:
 
             glBegin(GL_LINES);
             for (double x = begin; x < end; x+=step ) {
-//                if (index == 0) {
-//                    glColor(grid_pivot_color);
-//                } else {
-//                    glColor(grid_primary_color);
-//                }
-//                index += 1;
                 glVertex2d(x,y1);
                 glVertex2d(x,y2);
             }
@@ -203,7 +225,6 @@ private:
 
         {
             // Draw horisontal lines
-//            int index = -(int)( pivot.y / displayed_cell_size.y );
             double begin = (double) std::fmod(pivot.y, displayed_cell_size.y);
             if (begin < 0) begin += displayed_cell_size.y;
             double end = getSize().y;
@@ -214,18 +235,11 @@ private:
 
             glBegin(GL_LINES);
             for (double y = begin; y < end; y+=step ) {
-//                if (index == 0) {
-//                    glColor(grid_pivot_color);
-//                } else {
-//                    glColor(grid_primary_color);
-//                }
-//                index += 1;
                 glVertex2d(x1,y);
                 glVertex2d(x2,y);
             }
             glEnd();
         }
-        // Draw horizontal lines
     }
 
 

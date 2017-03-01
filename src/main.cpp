@@ -1,9 +1,9 @@
 #define DEBUG
 
 #include <iostream>
-#include <freeglut.h>
 #include <thread>
 #include <queue>
+#include <glutUtils.h>
 #include <mathUtils.h>
 
 #define bg(x) cout << string("BG: ")+string(x)+string("\n");
@@ -14,6 +14,7 @@
 #include "SafeQueue.h"
 #include "BackgroundWorker.h"
 #include "GuiManager.h"
+#include "PBOTexture.h"
 
 using namespace std;
 
@@ -34,10 +35,26 @@ thread bg_thread;
 int main(int argc, cstring argv[]) {
 
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_DEPTH | GLUT_SINGLE | GLUT_RGBA);
+
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(320, 320);
+
+    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
+
+    glEnable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+
     glutCreateWindow("Ass class destroyer");
+
+    GLenum glewinit = glewInit();
+    if (glewinit != GLEW_OK) {
+        std::cout << "Glew not okay! " << glewinit;
+        exit(-1);
+    }
+
+    PBOTexture::Init();
 
     gui("Registerring mouse callbacks");
 
@@ -128,20 +145,6 @@ void resize(int w, int h) {
     setupProjection(w, h, w, h);
     GuiManager::OnResize(w, h);
 
-//    // Use the Projection Matrix
-//    glMatrixMode(GL_PROJECTION);
-//
-//    // Reset Matrix
-//    glLoadIdentity();
-//
-//    // Set the viewport to be the entire window
-//    glViewport(0, 0, w, h);
-//
-//    // Set the correct perspective.
-//    gluPerspective(45.0f, ratio, 0.1f, 100.0f);
-//
-//    // Get Back to the Modelview
-//    glMatrixMode(GL_MODELVIEW);
 }
 
 void MouseFunc(int button, int state, int x, int y) {
