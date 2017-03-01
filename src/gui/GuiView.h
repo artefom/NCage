@@ -14,7 +14,10 @@ class GuiView : public GuiBase {
 public:
 
     Vec2d position;
+
     Vec2d scale;
+    Vec2d scale_min;
+    Vec2d scale_max;
 
     Vec2d cell_size;
 
@@ -37,6 +40,8 @@ public:
     GuiView() {
         position = Vec2d::ZERO;
         scale = Vec2d::ONE;
+        scale_min = Vec2d(0.000001,0.000001);
+        scale_max = Vec2d(100000,100000);
 
         cell_size = Vec2d(20,20);
 
@@ -63,6 +68,11 @@ public:
 
             if (button == 3) scale *= 1.1;
             else scale /= 1.1;
+
+            scale.x = mutils::clamp(scale.x,scale_min.x,scale_max.x);
+            scale.y = mutils::clamp(scale.y,scale_min.y,scale_max.y);
+
+            std::cout << scale.x << std::endl;
 
             Vec2d newPos = screenToLocal(mousePos);
             position += (newPos-old_position)/scale;
