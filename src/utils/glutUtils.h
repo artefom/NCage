@@ -7,6 +7,7 @@
 
 #include <string>
 #include <ios>
+#include <glew.h>
 #include <freeglut.h>
 
 #include "Vec2d.h"
