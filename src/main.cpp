@@ -54,8 +54,6 @@ int main(int argc, cstring argv[]) {
         exit(-1);
     }
 
-    PBOTexture::Init();
-
     gui("Registerring mouse callbacks");
 
     glutDisplayFunc(renderScene);

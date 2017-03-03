@@ -9,6 +9,7 @@
 #include <glutUtils.h>
 #include <cmath>
 #include <utils/PBOTexture.h>
+#include <stdlib.h>
 #include "GuiBase.h"
 
 class GuiView : public GuiBase {
@@ -38,10 +39,9 @@ public:
 
     bool dragging;
 
-    PBOTexture tex;
+    PBOTexture<512,512,512*512*4> tex;
 
-    GuiView() :
-            tex(128,128)
+    GuiView()
     {
         position = Vec2d::ZERO;
         scale = Vec2d::ONE;
@@ -104,6 +104,50 @@ public:
 
         drawRect(Vec2d::ZERO,getSize());
 
+        Vec2d pivot = localToScreen(Vec2d::ZERO);
+        {
+            Vec2d tex_p1 = pivot;
+            Vec2d tex_size = localToScreen(cell_size * 512) - pivot;
+            Vec2d tex_p2 = tex_p1 + tex_size;
+//
+//            int random_x = rand()%128;
+//            int random_y = rand()%128;
+//
+//            Color random_color = Color::gray(rand()%256);
+//
+//            tex.putPixel(random_x,random_y,random_color);
+
+            // Update pixels
+//            tex.updatePixels();
+
+            int min_x = 1;
+            int min_y = 1;
+            int max_x = 10;
+            int max_y = 5;
+            // Update sub pixels;
+            tex.updatePixels();
+
+            glEnable(GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, tex.textureId);
+
+            glColor4f(1, 1, 1, 1);
+            glBegin(GL_QUADS);
+
+            //glNormal3f(0, 0, 1);
+            glTexCoord2f(0.0f, 0.0f);
+            glVertex2d(tex_p1.x, tex_p1.y);
+            glTexCoord2f(1.0f, 0.0f);
+            glVertex2d(tex_p2.x, tex_p1.y);
+            glTexCoord2f(1.0f, 1.0f);
+            glVertex2d(tex_p2.x, tex_p2.y);
+            glTexCoord2f(0.0f, 1.0f);
+            glVertex2d(tex_p1.x, tex_p2.y);
+            glEnd();
+            // unbind texture
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDisable(GL_TEXTURE_2D);
+        }
+
         draw_grid(cell_size,min_displayed_cell_size_x, true, grid_primary_color, background_color,5);
 
         draw_grid(cell_size*highlight_step,min_displayed_cell_size_x*highlight_step, true, grid_secondary_color, grid_primary_color,4);
@@ -111,7 +155,6 @@ public:
         draw_grid(cell_size*highlight_step*highlight_step,min_displayed_cell_size_x*highlight_step*highlight_step,
                   true, grid_third_color, grid_secondary_color,3);
 
-        Vec2d pivot = localToScreen(Vec2d::ZERO);
 
         glColor(grid_pivot_color);
         if (pivot.x > 0 && pivot.x < getSize().x) {
@@ -128,32 +171,6 @@ public:
             glEnd();
         }
 
-
-        Vec2d tex_p1 = pivot;
-        Vec2d tex_size = localToScreen(cell_size*128)-pivot;
-        Vec2d tex_p2 = tex_p1+tex_size;
-
-        // draw a point with texture
-
-        tex.updatePixels();
-
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, tex.textureId);
-        glColor4f(1, 1, 1, 1);
-        glBegin(GL_QUADS);
-
-        //glNormal3f(0, 0, 1);
-        glTexCoord2f(0.0f, 0.0f);   glVertex2d( tex_p1.x, tex_p1.y );
-        glTexCoord2f(1.0f, 0.0f);   glVertex2d( tex_p2.x, tex_p1.y );
-        glTexCoord2f(1.0f, 1.0f);   glVertex2d( tex_p2.x, tex_p2.y );
-        glTexCoord2f(0.0f, 1.0f);   glVertex2d( tex_p1.x, tex_p2.y );
-
-        glEnd();
-
-        // unbind texture
-        glBindTexture(GL_TEXTURE_2D, 0);
-
-        glDisable(GL_TEXTURE_2D);
 
     }
 

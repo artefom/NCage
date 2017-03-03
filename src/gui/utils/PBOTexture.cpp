@@ -4,11 +4,3 @@
 
 
 #include "PBOTexture.h"
-
-
-bool PBOTexture::pboSupported = false;
-
-
-void PBOTexture::Init() {
-
-}

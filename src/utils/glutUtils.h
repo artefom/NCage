@@ -20,9 +20,9 @@ public:
     union {
         unsigned int code;
         struct {
-            unsigned char b;
-            unsigned char g;
             unsigned char r;
+            unsigned char g;
+            unsigned char b;
             unsigned char a;
         };
     };
@@ -45,6 +45,10 @@ public:
         return Color(r,g,b);
     }
 
+    inline static Color gray(unsigned char intensity) {
+        return Color(intensity,intensity,intensity);
+    }
+
 private:
 
     // Creates color from string
@@ -56,7 +60,14 @@ private:
         if (str[0] == 0) return;
 
         if (str[0] == '0' and str[1] == 'x') {
-            code = std::stoul(str, nullptr, 16);
+
+            unsigned long bgra =std::stoul(str, nullptr, 16);
+            unsigned char* colors = reinterpret_cast<unsigned char*>(&bgra);
+
+            r = colors[2];
+            g = colors[1];
+            b = colors[0];
+            a = colors[3];
 
             size_t str_length = strlen(str);
             if (str_length <= 8) {
