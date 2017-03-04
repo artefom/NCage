@@ -75,7 +75,12 @@ public:
 
     virtual void draw();
 
-    virtual void drawRaw();
+    // Draws scene in local (displayed scene) coordinates
+    virtual void localDraw();
+
+    virtual void localMouseEvent(int button, int state, Vec2d pos);
+
+    virtual void localMouseMove(Vec2d pos);
 
     Vec2d screenToLocal(Vec2d pos) const;
 

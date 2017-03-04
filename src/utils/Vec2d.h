@@ -2,6 +2,8 @@
 // Created by artef on 27.01.2017.
 //
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "CannotResolve"
 #ifndef PLAYIN_VEC2D_H
 #define PLAYIN_VEC2D_H
 
@@ -123,3 +125,5 @@ typedef Vec2<int> Vec2i;
 
 
 #endif //PLAYIN_VEC2D_H
+
+#pragma clang diagnostic pop

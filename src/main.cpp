@@ -114,8 +114,8 @@ void resize(int w, int h) {
     if (h == 0)
         h = 1;
 
-    Vec2i size_i{w,h};
-    Vec2d size_d{(double)w,(double)h};
+    Vec2i size_i{(Vec2i::ctype)w,(Vec2i::ctype)h};
+    Vec2d size_d{(Vec2d::ctype)w,(Vec2d::ctype)h};
 
     ProjectionManager::setupProjection( size_i, size_d );
 
@@ -124,10 +124,7 @@ void resize(int w, int h) {
 }
 
 void MouseFunc(int button, int state, int x, int y) {
-//
-//    double new_x = mutils::map(x, 0, SCR_W, 0.0, Local_W);
-//    double new_y = mutils::map(y, 0, SCR_H, 0.0, Local_H);
-//
+
     Vec2d local_mpos = ProjectionManager::screenToLocal(Vec2i(x,y));
     GuiManager::OnMouseDown(button, state, local_mpos);
 

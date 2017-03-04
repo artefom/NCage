@@ -31,7 +31,7 @@ void GuiManager::OnResize(Vec2d size) {
     GuiRoot.setSizeMin( size );
 
     render_view->setPositionMin( Vec2d::ZERO );
-    render_view->setSizeMin( size );
+    render_view->setSizeMin( size*0.5 );
 }
 
 void GuiManager::PostInit() {

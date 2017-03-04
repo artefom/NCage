@@ -112,12 +112,12 @@ void GuiView::draw() {
     {safePushMatrix mat;
         glTranslate( position );
         glScale( scale_inv );
-        drawRaw();
+        localDraw();
     }
     draw_grids();
 }
 
-void GuiView::drawRaw() {
+void GuiView::localDraw() {
 
     glColor(Color(255,0,0));
     drawRect( Vec2d::ZERO,Vec2d(20,20) );
@@ -277,3 +277,12 @@ GuiView::draw_grid(Vec2d cell_size, double min_displayed_cell_size_x, bool dynam
         glEnd();
     }
 }
+
+void GuiView::localMouseEvent(int button, int state, Vec2d pos) {
+
+}
+
+void GuiView::localMouseMove(Vec2d pos) {
+
+}
+
