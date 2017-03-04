@@ -5,10 +5,14 @@
 #ifndef PLAYIN_VEC2D_H
 #define PLAYIN_VEC2D_H
 
+#include <type_traits>
+
 
 template<class T>
 struct Vec2 {
 public:
+
+    typedef T ctype;
 
     T x;
     T y;
@@ -65,6 +69,8 @@ const Vec2<T> Vec2<T>::ONE{1,1};
 template <class T>
 const Vec2<T> Vec2<T>::ZERO{0,0};
 
+
+// OPERATIONS WITH VECTORS
 template<class T>
 inline Vec2<T> operator+(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs.x+rhs.x,lhs.y+rhs.y); };
 
@@ -72,26 +78,44 @@ template<class T>
 inline Vec2<T> operator-(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs.x-rhs.x,lhs.y-rhs.y); };
 
 template<class T>
-inline Vec2<T> operator+(const Vec2<T>& lhs, double rhs) { return Vec2<T>(lhs.x+rhs,lhs.y+rhs); }
-
-template<class T>
-inline Vec2<T> operator-(const Vec2<T>& lhs, double rhs) { return Vec2<T>(lhs.x-rhs,lhs.y-rhs); };
-
-template<class T>
-inline Vec2<T> operator*(const Vec2<T>& lhs, double rhs) { return Vec2<T>(lhs.x*rhs,lhs.y*rhs); };
-
-template<class T>
-inline Vec2<T> operator/(const Vec2<T>& lhs, double rhs) { return Vec2<T>(lhs.x/rhs,lhs.y/rhs); };
-
-template<class T>
 inline Vec2<T> operator*(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs.x*rhs.x,lhs.y*rhs.y); };
 
 template<class T>
 inline Vec2<T> operator/(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs.x/rhs.x,lhs.y/rhs.y); };
 
+// OPERATIONS WITH SCALARS
+template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator+(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x+rhs,lhs.y+rhs); }
+
+template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator-(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x-rhs,lhs.y-rhs); };
+
+template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator*(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x*rhs,lhs.y*rhs); };
+
+template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator/(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x/rhs,lhs.y/rhs); };
+
+// OPERATIONS WITH SCALARS REVERSED
+
+template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator+(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs+rhs.x,lhs+rhs.y); }
+
+template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator-(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs-rhs.x,lhs-rhs.y); };
+
+template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator*(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs*rhs.x,lhs*rhs.y); };
+
+template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+inline Vec2<T> operator/(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs/rhs.x,lhs/rhs.y); };
+
+
+// UNARY MINUS
 template<class T>
 inline Vec2<T> operator-(const Vec2<T>& rhs) {return Vec2<T>(-rhs.x,-rhs.y);};
 
+// TYPEDEFS
 typedef Vec2<double> Vec2d;
 typedef Vec2<float> Vec2f;
 

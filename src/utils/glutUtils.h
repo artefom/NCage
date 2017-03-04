@@ -118,6 +118,14 @@ inline void glTranslate(Vec2<float> vec) {
     glTranslatef(vec.x,vec.y,0);
 }
 
+inline void glScale(Vec2<double> vec) {
+    glScaled(vec.x,vec.y,0);
+}
+
+inline void glScale(Vec2<float> vec) {
+    glScalef(vec.x,vec.y,0);
+}
+
 inline void drawHRect(Vec2d p1, Vec2d p2) {
     glBegin(GL_LINE_LOOP);
     glVertex2d(p1.x, p1.y);

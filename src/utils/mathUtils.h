@@ -5,6 +5,7 @@
 #ifndef PLAYIN_MATHUTILS_H
 #define PLAYIN_MATHUTILS_H
 
+#include <cmath>
 #include "Vec2d.h"
 
 namespace mutils {
@@ -22,6 +23,31 @@ namespace mutils {
         if (value > max) value = (T1)max;
         else if (value < min) value = (T1)min;
         return value;
+    }
+
+    template<class T>
+    inline bool isnan_any(Vec2<T> vec) {
+        return std::isnan(vec.x) || std::isnan(vec.y);
+    }
+
+    template<class T>
+    inline bool isinf_any(Vec2<T> vec) {
+        return std::isinf(vec.x) || std::isinf(vec.y);
+    }
+
+    template<class T>
+    inline bool iszer_any(Vec2<T> vec) {
+        return (vec.x == 0) || (vec.y == 0);
+    }
+
+    template<class T>
+    inline bool isneg_any(Vec2<T> vec) {
+        return (vec.x < 0) || (vec.y < 0);
+    }
+
+    template<class T>
+    inline bool ispos_any(Vec2<T> vec) {
+        return (vec.x > 0) || (vec.y > 0);
     }
 
 }
