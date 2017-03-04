@@ -10,10 +10,19 @@
 #include <iostream>
 #include <stdlib.h>
 
-template<GLuint IMAGE_WIDTH,GLuint IMAGE_HEIGHT,GLuint DATA_SIZE>
-
+template<GLuint IMAGE_WIDTH,
+        GLuint IMAGE_HEIGHT,
+        GLenum PIXEL_FORMAT,
+        GLuint DATA_SIZE = IMAGE_WIDTH*IMAGE_HEIGHT*pixelSize<PIXEL_FORMAT>::size >
 class PBOTexture {
 public:
+
+    // Define global parameters
+
+    static const GLuint width = IMAGE_WIDTH;
+    static const GLuint height = IMAGE_HEIGHT;
+    static const GLuint data_size = DATA_SIZE;
+    static const GLenum pixel_format = PIXEL_FORMAT;
 
     GLuint pboId;
     GLuint textureId;
@@ -34,9 +43,11 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
-        //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3);
-        glTexStorage2D(GL_TEXTURE_2D,1,GL_RGBA8,IMAGE_WIDTH,IMAGE_HEIGHT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_BASE_LEVEL, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 3);
+
+        //Create internal storage for image.
+        glTexStorage2D(GL_TEXTURE_2D,1,PIXEL_FORMAT,IMAGE_WIDTH,IMAGE_HEIGHT);
         //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, IMAGE_WIDTH, IMAGE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
         //glTexSubImage2D(GL_TEXTURE_2D,0,0,0,IMAGE_WIDTH,IMAGE_HEIGHT,GL_RGBA,GL_UNSIGNED_BYTE,0);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -67,43 +78,35 @@ public:
         glBindTexture(GL_TEXTURE_2D, textureId);
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, pboId);
 
-        // bind PBO to update pixel values
-        //glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, pboId);
+        // Just fill texture with random pixels
+        randomizeTexture(mapped_mem, IMAGE_WIDTH, IMAGE_HEIGHT, DATA_SIZE, false);
 
-        // map the buffer object into client's memory
-        // Note that glMapBufferARB() causes sync issue.
-        // If GPU is working with this buffer, glMapBufferARB() will wait(stall)
-        // for GPU to finish its job. To avoid waiting (stall), you can call
-        // first glBufferDataARB() with NULL pointer before glMapBufferARB().
-        // If you do that, the previous data in PBO will be discarded and
-        // glMapBufferARB() returns a new allocated pointer immediately
-        // even if GPU is still working with the previous data.
-        //glBufferDataARB(GL_PIXEL_UNPACK_BUFFER_ARB, DATA_SIZE, 0, GL_STREAM_DRAW_ARB);
-//        GLubyte* mem = (GLubyte*)glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
-         //mapped_mem = (Color*)glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
+        // Initiate texture loading process
+        // According to documentation, this function will wait until previous operation is finished
+        // Though, it's not certain.
+        // This function initiates DMA transfer to video card memory.
+        glTexSubImage2D(GL_TEXTURE_2D,0,0,0,IMAGE_WIDTH,IMAGE_HEIGHT,PIXEL_FORMAT,GL_UNSIGNED_BYTE,0);
 
-//        if(ptr)
-//        {
-            // update data directly on the mapped buffer
-        updatePixels(mapped_mem, IMAGE_WIDTH, IMAGE_HEIGHT, DATA_SIZE, false);
-            //glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB); // release pointer to mapping buffer
-//        }
+        //glGenerateMipmapEXT(GL_TEXTURE_2D);
 
-        // copy pixels from PBO to texture object
-        // Use offset instead of ponter.
-        //glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        //glGenerateMipmap(GL_TEXTURE_2D);
-        //glUnmapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB);
-        glTexSubImage2D(GL_TEXTURE_2D,0,0,0,10,10,GL_RGBA,GL_UNSIGNED_BYTE,0);
-        //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, IMAGE_WIDTH, IMAGE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-        // it is good idea to release PBOs with ID 0 after use.
-        // Once bound with 0, all pixel operations behave normal ways.
+        // Unbind buffer and texture
         glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
-        //glBindTexture(GL_TEXTURE_2D,0);
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
+    void updateSubPixels(int min_x, int min_y, int max_x, int max_y) {
+        glBindTexture(GL_TEXTURE_2D, textureId);
+        glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, pboId);
+
+        randomizeTexture(mapped_mem, IMAGE_WIDTH, IMAGE_HEIGHT, DATA_SIZE, false);
+
+        glTexSubImage2D(GL_TEXTURE_2D,0,min_x,min_y,max_x-min_x,max_y-min_y,PIXEL_FORMAT,GL_UNSIGNED_BYTE,0);
+        glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
+        glBindTexture(GL_TEXTURE_2D,0);
     }
 
 
-    void updatePixels(void* dst, GLsizei width, GLsizei height, GLsizei size, bool full_update)
+    void randomizeTexture(void* dst, GLsizei width, GLsizei height, GLsizei size, bool full_update)
     {
         if(!dst)
             return;
@@ -113,35 +116,24 @@ public:
 //
 //        mapped_mem[random_height*IMAGE_HEIGHT+random_width] = Color::gray(rand()%255);
 
-        int* ptr = (int*)dst;
+        Color* ptr = (Color*)dst;
 
         // copy 4 bytes at once
         for(int i = 0; i < IMAGE_HEIGHT; ++i)
         {
             for(int j = 0; j < IMAGE_WIDTH; ++j)
             {
-                *ptr = (int)((float)rand()/RAND_MAX*4294967296-2147483648);
+                ptr->r = rand()%256;// = Color::gray(rand()%256);
+                ptr->g = rand()%256;
+                ptr->b = rand()%256;
                 ++ptr;
             }
         }
     }
 
-    inline static bool isPBOSupported() {
-        return pboSupported;
-    }
-
     ~PBOTexture(){
 
     }
-
-private:
-
-    //GLsizei DATA_SIZE;
-
-    //GLsizei IMAGE_WIDTH;
-    //GLsizei IMAGE_HEIGHT;
-
-    static bool pboSupported;
 
 };
 

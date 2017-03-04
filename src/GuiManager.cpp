@@ -8,16 +8,15 @@
 
 void GuiManager::Init() {
     std::cout << "Hello from Gui manager initialization" << std::endl;
-    guiScale = Vec2d::ONE;
 }
 
-void GuiManager::OnMouseMove(double x, double y) {
-    GuiRoot.OnMouseMove(Vec2d(x,y));
+void GuiManager::OnMouseMove(Vec2d mouse_pos) {
+    GuiRoot.OnMouseMove(mouse_pos);
 }
 
-void GuiManager::OnMouseDown(int button, int state, double x, double y) {
+void GuiManager::OnMouseDown(int button, int state, Vec2d mouse_pos) {
 
-    GuiRoot.OnMouseEvent(button, state, Vec2d(x, y));
+    GuiRoot.OnMouseEvent(button, state, mouse_pos);
 
     BackgroundWorker::input_events.enqueue(button);
 }
@@ -26,16 +25,13 @@ void GuiManager::terminate() {
 
 }
 
-void GuiManager::OnResize(double width, double height) {
-
-//    double resized_width = width*guiScale.x;
-//    double resized_height = height*guiScale.y;
+void GuiManager::OnResize(Vec2d size) {
 
     GuiRoot.setPositionMin( Vec2d::ZERO );
-    GuiRoot.setSizeMin( Vec2d(width,height) );
+    GuiRoot.setSizeMin( size );
 
     render_view->setPositionMin( Vec2d::ZERO );
-    render_view->setSizeMin( Vec2d(width,height) );
+    render_view->setSizeMin( size );
 }
 
 void GuiManager::PostInit() {
@@ -57,7 +53,5 @@ void GuiManager::draw() {
 SafeQueue<int> GuiManager::input_events;
 
 GuiFrame GuiManager::GuiRoot;
-
-Vec2d GuiManager::guiScale;
 
 std::shared_ptr<GuiView> GuiManager::render_view;

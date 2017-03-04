@@ -108,10 +108,10 @@ void GuiFrame::draw() {
 
     for (std::shared_ptr<GuiBase>& v : children) {
 
-        glPushMatrix();
-        glTranslate(v->getPositionMin());
-        v->draw();
-        glPopMatrix();
+        {safePushMatrix mat;
+            glTranslate(v->getPositionMin());
+            v->draw();
+        }
 
     }
 }

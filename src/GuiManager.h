@@ -25,38 +25,26 @@ public:
 
     static SafeQueue<int> input_events;
 
-    static Vec2d guiScale;
-
     // Initialize GUI Manager
     static void Init();
 
     // Initialization AFTER background thread was created
     static void PostInit();
 
-    // Enables gui
-    static void display_gui();
-
-    // Disables gui
-    static void hide_gui();
-
     // Terminates gui
     static void terminate();
 
     // Mouse Move event
-    static void OnMouseMove(double x, double y);
+    static void OnMouseMove(Vec2d mouse_pos);
 
     // Mouse Down event
-    static void OnMouseDown(int button, int state, double x, double y);
+    static void OnMouseDown(int button, int state, Vec2d mouse_pos);
 
     // Called on resize
-    static void OnResize(double width, double height);;
+    static void OnResize(Vec2d size);
 
     // Draw call
     static void draw();
-
-    static std::stack<std::shared_ptr<GuiBase> > clickStack;
-    // Structure of gui lying beneath cursor
-    static std::stack<std::shared_ptr<GuiBase> > under_mouse;
 
 private:
 

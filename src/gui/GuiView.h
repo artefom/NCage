@@ -39,7 +39,7 @@ public:
 
     bool dragging;
 
-    PBOTexture<512,512,512*512*4> tex;
+    //PBOTexture<512,512,GL_RGBA> tex;
 
     GuiView()
     {
@@ -98,55 +98,72 @@ public:
     }
 
     virtual void draw() {
+        draw_background();
+
+        drawRaw();
+
+        draw_grids();
+    }
+
+    virtual void drawRaw() {
 
         // Draw background
+
+//        Vec2d pivot = localToScreen(Vec2d::ZERO);
+//        {
+//            Vec2d tex_p1 = pivot;
+//            Vec2d tex_size = localToScreen(cell_size * 512) - pivot;
+//            Vec2d tex_p2 = tex_p1 + tex_size;
+//
+//            // Update sub pixels;
+////            tex.updatePixels();
+//////            tex.updateSubPixels(min_x,min_y,max_x,max_y);
+////
+////            glEnable(GL_TEXTURE_2D);
+////            glBindTexture(GL_TEXTURE_2D, tex.textureId);
+////
+////            glColor4f(1, 1, 1, 1);
+////            glBegin(GL_QUADS);
+////
+////            //glNormal3f(0, 0, 1);
+////            glTexCoord2f(0.0f, 0.0f);
+////            glVertex2d(tex_p1.x, tex_p1.y);
+////            glTexCoord2f(1.0f, 0.0f);
+////            glVertex2d(tex_p2.x, tex_p1.y);
+////            glTexCoord2f(1.0f, 1.0f);
+////            glVertex2d(tex_p2.x, tex_p2.y);
+////            glTexCoord2f(0.0f, 1.0f);
+////            glVertex2d(tex_p1.x, tex_p2.y);
+////            glEnd();
+////            // unbind texture
+////            glBindTexture(GL_TEXTURE_2D, 0);
+////            glDisable(GL_TEXTURE_2D);
+//        }
+
+
+
+    }
+
+
+    Vec2d screenToLocal(Vec2d pos) {
+        return (pos-position)*scale;
+    }
+
+    Vec2d localToScreen(Vec2d pos) {
+        return (pos/scale)+position;
+    }
+
+protected:
+
+    void draw_background() {
         glColor(background_color);
 
         drawRect(Vec2d::ZERO,getSize());
+    }
+
+    void draw_grids() {
 
         Vec2d pivot = localToScreen(Vec2d::ZERO);
-        {
-            Vec2d tex_p1 = pivot;
-            Vec2d tex_size = localToScreen(cell_size * 512) - pivot;
-            Vec2d tex_p2 = tex_p1 + tex_size;
-//
-//            int random_x = rand()%128;
-//            int random_y = rand()%128;
-//
-//            Color random_color = Color::gray(rand()%256);
-//
-//            tex.putPixel(random_x,random_y,random_color);
-
-            // Update pixels
-//            tex.updatePixels();
-
-            int min_x = 1;
-            int min_y = 1;
-            int max_x = 10;
-            int max_y = 5;
-            // Update sub pixels;
-            tex.updatePixels();
-
-            glEnable(GL_TEXTURE_2D);
-            glBindTexture(GL_TEXTURE_2D, tex.textureId);
-
-            glColor4f(1, 1, 1, 1);
-            glBegin(GL_QUADS);
-
-            //glNormal3f(0, 0, 1);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex2d(tex_p1.x, tex_p1.y);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex2d(tex_p2.x, tex_p1.y);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex2d(tex_p2.x, tex_p2.y);
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex2d(tex_p1.x, tex_p2.y);
-            glEnd();
-            // unbind texture
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glDisable(GL_TEXTURE_2D);
-        }
 
         draw_grid(cell_size,min_displayed_cell_size_x, true, grid_primary_color, background_color,5);
 
@@ -170,17 +187,6 @@ public:
             glVertex2d(getSize().x,pivot.y);
             glEnd();
         }
-
-
-    }
-
-
-    Vec2d screenToLocal(Vec2d pos) {
-        return (pos-position)*scale;
-    }
-
-    Vec2d localToScreen(Vec2d pos) {
-        return (pos/scale)+position;
     }
 
 private:

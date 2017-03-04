@@ -15,6 +15,7 @@
 #include "BackgroundWorker.h"
 #include "GuiManager.h"
 #include "PBOTexture.h"
+#include "ProjectionManager.h"
 
 using namespace std;
 
@@ -86,41 +87,18 @@ void glutCloseFunc() {
 
 }
 
-int SCR_W = 1;
-int SCR_H = 1;
-double Local_W = 1;
-double Local_H = 1;
-
 void PassiveMouseMove(int x, int y) {
 
-    double lx = mutils::map(x, 0, SCR_W, 0.0, Local_W);
-    double ly = mutils::map(y, 0, SCR_H, 0.0, Local_H);
+    Vec2d local_mpos = ProjectionManager::screenToLocal( Vec2i(x,y) );
 
-    GuiManager::OnMouseMove(lx, ly);
+    GuiManager::OnMouseMove(local_mpos);
 
-}
-
-
-void setupProjection(int screen_width, int screen_height, double width, double height) {
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    SCR_W = screen_width;
-    SCR_H = screen_height;
-    Local_W = width;
-    Local_H = height;
-
-    glViewport(0, 0, screen_width, screen_height);
-    glOrtho(0.0, width, height, 0.0, -1.0, 10.0);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    //glDisable(GL_CULL_FACE);
-    glMatrixMode(GL_MODELVIEW);
 }
 
 void renderScene(void) {
 
     // Clear all
+
     glClear(GL_COLOR_BUFFER_BIT);
 
     GuiManager::draw();
@@ -133,22 +111,24 @@ void renderScene(void) {
 
 void resize(int w, int h) {
 
-    // Prevent a divide by zero, when window is too short
-    // (you cant make a window of zero width).
     if (h == 0)
         h = 1;
 
-    //float ratio =  w * 1.0 / h;
+    Vec2i size_i{w,h};
+    Vec2d size_d{(double)w,(double)h};
 
-    setupProjection(w, h, w, h);
-    GuiManager::OnResize(w, h);
+    ProjectionManager::setupProjection( size_i, size_d );
+
+    GuiManager::OnResize( size_d );
 
 }
 
 void MouseFunc(int button, int state, int x, int y) {
-
-    double new_x = mutils::map(x, 0, SCR_W, 0.0, Local_W);
-    double new_y = mutils::map(y, 0, SCR_H, 0.0, Local_H);
-    GuiManager::OnMouseDown(button, state, new_x, new_y);
+//
+//    double new_x = mutils::map(x, 0, SCR_W, 0.0, Local_W);
+//    double new_y = mutils::map(y, 0, SCR_H, 0.0, Local_H);
+//
+    Vec2d local_mpos = ProjectionManager::screenToLocal(Vec2i(x,y));
+    GuiManager::OnMouseDown(button, state, local_mpos);
 
 }

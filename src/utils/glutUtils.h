@@ -80,7 +80,15 @@ private:
 
 };
 
-inline void drawRect(Vec2d p1, Vec2d p2) {
+inline void glVertex(Vec2<double> v) {
+    glVertex2d(v.x,v.y);
+}
+
+inline void glVertex(Vec2<float> v) {
+    glVertex2f(v.x,v.y);
+}
+
+inline void drawRect(Vec2<double> p1, Vec2<double> p2) {
     glBegin(GL_QUADS);
     glVertex2d(p1.x, p1.y);
     glVertex2d(p2.x, p1.y);
@@ -89,12 +97,25 @@ inline void drawRect(Vec2d p1, Vec2d p2) {
     glEnd();
 }
 
+inline void drawRect(Vec2<float> p1, Vec2<float> p2) {
+    glBegin(GL_QUADS);
+    glVertex2f(p1.x, p1.y);
+    glVertex2f(p2.x, p1.y);
+    glVertex2f(p2.x, p2.y);
+    glVertex2f(p1.x, p2.y);
+    glEnd();
+}
+
 inline void glColor(Color c) {
     glColor4ub(c.r,c.g,c.b,c.a);
 }
 
-inline void glTranslate(Vec2d vec) {
+inline void glTranslate(Vec2<double> vec) {
     glTranslated(vec.x,vec.y,0);
+}
+
+inline void glTranslate(Vec2<float> vec) {
+    glTranslatef(vec.x,vec.y,0);
 }
 
 inline void drawHRect(Vec2d p1, Vec2d p2) {
@@ -105,5 +126,26 @@ inline void drawHRect(Vec2d p1, Vec2d p2) {
     glVertex2d(p1.x, p2.y);
     glEnd();
 }
+
+
+class safePushMatrix {
+public:
+    safePushMatrix() {
+        glPushMatrix();
+    }
+
+    ~safePushMatrix() {
+        glPopMatrix();
+    }
+};
+
+template<GLenum T>
+class pixelSize;
+
+#define PXSIZE(e,x) template<> class pixelSize<e> { public: static const int size = x;};
+
+PXSIZE(GL_RGBA,4)
+
+#undef PXSIZE
 
 #endif //PLAYIN_GLUTUTILS_H
