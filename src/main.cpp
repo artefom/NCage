@@ -10,7 +10,7 @@
 #define gui(x) cout << string("GUI: ")+string(x)+string("\n");
 
 
-#include "constants.h"
+#include "resources/constants.h"
 #include "SafeQueue.h"
 #include "BackgroundWorker.h"
 #include "GuiManager.h"

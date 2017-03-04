@@ -5,7 +5,7 @@
 #ifndef PLAYIN_GUIBUTTON_H
 #define PLAYIN_GUIBUTTON_H
 
-#include <constants.h>
+#include <resources/constants.h>
 #include <functional>
 
 #include "GuiBase.h"
