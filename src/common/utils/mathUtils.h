@@ -50,6 +50,40 @@ namespace mutils {
         return (vec.x > 0) || (vec.y > 0);
     }
 
+    template<class T> Vec2<T> abs( Vec2<T> vec ) {
+        return Vec2<T>(std::abs(vec.x),std::abs(vec.y));
+    }
+
+    template<class T> Vec2<T> round( Vec2<T> vec ) {
+        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+    }
+
+    template<class T> Vec2<T> floor( Vec2<T> vec ) {
+        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+    }
+
+    template<class T> Vec2<T> ceil( Vec2<T> vec ) {
+        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+    }
+
+    template<class T,T(F)(T)> Vec2<T> apply(Vec2<T> vec) {
+        return Vec2<T>( F(vec.x),F(vec.y) );
+    }
+
+    template<class T,T(F)(T,T)> Vec2<T> apply(Vec2<T> vec1, Vec2<T> vec2) {
+        return Vec2<T>( F(vec1.x,vec2.x),F(vec1.y,vec2.y) );
+    }
+
+    template<class T> T
+    inline min (T v1, T v2) {
+        return v1 > v2 ? v2 : v1;
+    }
+
+    template<class T> T
+    inline max (T v1, T v2) {
+        return v1 > v2 ? v1 : v2;
+    }
+
 }
 
 

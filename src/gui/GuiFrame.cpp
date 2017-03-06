@@ -3,6 +3,7 @@
 //
 
 #include "GuiFrame.h"
+#include "ProjectionManager.h"
 
 void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
@@ -104,14 +105,26 @@ void GuiFrame::OnMouseMove(Vec2d mousePos) {
 }
 
 void GuiFrame::draw() {
-    GuiBase::draw();
 
-    for (std::shared_ptr<GuiBase>& v : children) {
 
-        {safePushMatrix mat;
+    for (std::shared_ptr<GuiBase> &v : children) {
+
+        {
+            safePushMatrix mat;
             glTranslate(v->getPositionMin());
+//
+//            v->drawBuffered();
+            v->preDraw();
             v->draw();
+            v->postDraw();
+//
+//            glColor( Color(0,255,0) );
+//            drawRect(Vec2d(0,0),Vec2d(5,5));
         }
 
     }
+//
+//    glColor( Color(255,0,0) );
+//    drawRect(Vec2d(0,0),Vec2d(5,5));
+//
 }

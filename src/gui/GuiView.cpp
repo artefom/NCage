@@ -3,6 +3,7 @@
 //
 
 #include "GuiView.h"
+#include "ProjectionManager.h"
 
 GuiView::GuiView() {
     position = Vec2d::ZERO;
@@ -106,16 +107,43 @@ void GuiView::OnMouseMove(Vec2d mousePos) {
 
 }
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "TemplateArgumentsIssues"
 void GuiView::draw() {
     draw_background();
 
-    {safePushMatrix mat;
-        glTranslate( position );
-        glScale( scale_inv );
+    Vec2i p1 = ProjectionManager::project_i(Vec2d::ZERO);
+    Vec2i p2 = ProjectionManager::project_i(getSize());
+
+    Vec2i min = Vec2i::apply<mutils::min>(p1,p2);
+    Vec2i max = Vec2i::apply<mutils::max>(p1,p2);
+
+
+//    Vec2i size = ProjectionManager::project_size(Vec2d::ZERO,getSize());// Vec2d(p2.x-p1.x,p1.y-p2.y);
+//
+//    if (size != ProjectionManager::SCR_SIZE) {
+//        print("Coordinates:", p1, p2);
+//        print("Screen size:", ProjectionManager::SCR_SIZE);
+//        print("Calculated size:", size);
+//        print();
+//    }
+
+    //print("Difference: ")
+
+    {
+        //print(min,max);
+
+        //safeScissor sc(min.x,min.y,max.x-min.x,max.y-min.y);
+        safePushMatrix mat;
+
+        glTranslate(position);
+        glScale(scale_inv);
         localDraw();
     }
+
     draw_grids();
 }
+#pragma clang diagnostic pop
 
 void GuiView::localDraw() {
 

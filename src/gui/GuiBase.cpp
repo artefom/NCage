@@ -7,7 +7,8 @@
 GuiBase::GuiBase() :
         pos_min(0,0),
         pos_max(0,0),
-        parent(0) {
+        parent(0),
+        should_update(true) {
 
 }
 

@@ -33,6 +33,8 @@ public:
     Event< std::function< void() > > MouseEnterEvent;
     Event< std::function< void() > > MouseLeaveEvent;
 
+    bool should_update;
+
     GuiBase();
 
     inline void setSelf(std::weak_ptr<GuiBase> i_self) {
@@ -56,19 +58,19 @@ public:
     }
 
     inline void setPositionMin(Vec2d position) {
-        beforeResize();
+        //beforeResize();
         Vec2d size = getSize();
         pos_min = position;
         pos_max = pos_min + size;
-        afterResize();
+        //afterResize();
     }
 
     inline void setPositionMax(Vec2d position) {
-        beforeResize();
+        //beforeResize();
         Vec2d size = getSize();
         pos_max = position;
         pos_min = pos_max-size;
-        afterResize();
+        //afterResize();
     }
 
     inline void setSizeMin(Vec2d size) {
@@ -87,7 +89,16 @@ public:
 
     virtual void afterResize();
 
+    virtual void preDraw() {
+
+    };
+
     virtual void draw();
+
+    virtual void postDraw() {
+
+    };
+
 
     // Mouse event in relative coordinates
     virtual void OnMouseEvent(int button, int state, Vec2d mousePos);

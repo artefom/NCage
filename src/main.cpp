@@ -29,6 +29,8 @@ void MouseFunc(int button, int state, int x, int y);
 
 void glutCloseFunc();
 
+void setupProjection(int w, int h);
+
 bool shouldExit = false;
 
 thread bg_thread;
@@ -37,14 +39,25 @@ int main(int argc, cstring argv[]) {
 
     glutInit(&argc, argv);
 
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA | GLUT_ALPHA);
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(320, 320);
+    Vec2i window_size = Vec2i(512,512);
 
-    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA );
+    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(window_size.x, window_size.y);
+
+    glClearColor(0.0,0.0,0.0,0.0);
+
+    //glEnable(GL_SCISSOR_TEST);
+    //glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
 
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_BLEND);
+    //glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_ALPHA_TEST);
+
+    //glBlendFunc (GL_ONE, GL_ONE);
+
+
     glDisable(GL_LIGHTING);
 
     glutCreateWindow("Ass class destroyer");
@@ -71,6 +84,8 @@ int main(int argc, cstring argv[]) {
 
     bg_thread = thread(run_background_thread);
 
+    setupProjection(window_size.x,window_size.y);
+
     GuiManager::PostInit();
 
     glutMainLoop();
@@ -89,7 +104,7 @@ void glutCloseFunc() {
 
 void PassiveMouseMove(int x, int y) {
 
-    Vec2d local_mpos = ProjectionManager::screenToLocal( Vec2i(x,y) );
+    Vec2d local_mpos = ProjectionManager::unProjectMouse( Vec2i(x,y) );
 
     GuiManager::OnMouseMove(local_mpos);
 
@@ -101,6 +116,12 @@ void renderScene(void) {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
+    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    //glBlendFunc(GL_ONE, GL_ONE);
+
     GuiManager::draw();
 
     glutPostRedisplay();
@@ -109,23 +130,39 @@ void renderScene(void) {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-void resize(int w, int h) {
-
+void setupProjection(int w, int h) {
     if (h == 0)
         h = 1;
 
     Vec2i size_i{(Vec2i::ctype)w,(Vec2i::ctype)h};
     Vec2d size_d{(Vec2d::ctype)w,(Vec2d::ctype)h};
 
-    ProjectionManager::setupProjection( size_i, size_d );
+    ProjectionManager::setScreenSize(size_i);
+    //ProjectionManager::setScale(Vec2d(0.5,0.5));
+    //ProjectionManager::setScreenSize(Vec2d(1,1));
 
-    GuiManager::OnResize( size_d );
+    ProjectionManager::setScissor(Vec2i::ZERO,size_i);
+    ProjectionManager::setViewportProjection(Vec2i::ZERO,size_i);
+}
+
+void resize(int w, int h) {
+
+    setupProjection(w,h);
+    //ProjectionManager::updateView( Vec2i::ZERO, size_i );
+//    ProjectionManager::setupPro jection( size_i, size_d );
+
+    GuiManager::OnResize( ProjectionManager::getViewportObjSize() );
 
 }
 
 void MouseFunc(int button, int state, int x, int y) {
 
-    Vec2d local_mpos = ProjectionManager::screenToLocal(Vec2i(x,y));
+    print("Mouse:",x,ProjectionManager::SCR_SIZE.y-y);
+
+    print("Local:",ProjectionManager::unProject(Vec2i(x,ProjectionManager::SCR_SIZE.y-y)));
+
+    Vec2d local_mpos = ProjectionManager::unProjectMouse(Vec2i(x,y));
+
     GuiManager::OnMouseDown(button, state, local_mpos);
 
 }

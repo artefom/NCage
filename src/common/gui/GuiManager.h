@@ -12,6 +12,7 @@
 #include <GuiFrame.h>
 #include <GuiWindow.h>
 #include <GuiFactory.h>
+#include <GuiTextureView.h>
 #include <stack>
 #include <GuiView.h>
 
@@ -21,7 +22,7 @@ class GuiManager {
 
 public:
 
-    static std::shared_ptr<GuiView> render_view;
+    static std::shared_ptr<GuiTextureView> render_view;
 
     static SafeQueue<int> input_events;
 
@@ -48,7 +49,7 @@ public:
 
 private:
 
-    static GuiFrame GuiRoot;
+    static std::shared_ptr<GuiFrame> GuiRoot;
 
     GuiManager() {};
 

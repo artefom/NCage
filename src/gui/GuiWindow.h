@@ -25,6 +25,12 @@ public:
             }
 
             drawRect(Vec2d::ZERO, getSize());
+
+            Vec2d real_size = getSize();
+            real_size.y-=ProjectionManager::getPixelSize().y;
+
+            glColor(constants::gui_close_button);
+            drawHRect(Vec2d::ZERO, real_size);
         }
     };
 
@@ -57,28 +63,56 @@ public:
     }
 
     virtual void draw() {
-        glColor(constants::gui_frame_foreground);
-        drawRect(Vec2d::ZERO, getSize());
-        glColor(constants::gui_frame_background);
-        drawRect(workFrame->getPositionMin(), workFrame->getPositionMax());
+        //glColor4f(0.8,0.5,0.3,0.5);
+        //glColor(constants::gui_frame_foreground);
+
+
+        // If rendering to texuture, dont mix color with Black background
+        // Instead, pass full colod
+        if (cull_mode == constants::CULL_TEXTURE) {
+            glBlendFunc(GL_ONE,GL_ONE);
+
+            glColor(constants::gui_frame_foreground);
+            drawRect( Vec2d::ZERO, getSize() );
+
+            glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+        } else {
+            glColor(constants::gui_frame_foreground);
+            drawRect( Vec2d::ZERO, getSize() );
+        }
+
+
+
+
         glColor(constants::gui_frame_accent1);
-        drawHRect(Vec2d::ZERO, getSize());
-        drawHRect(workFrame->getPositionMin(), workFrame->getPositionMax());
+        drawHRect( workFrame->getPositionMin()-ProjectionManager::getPixelSize(), workFrame->getPositionMax() );
+
+        glColor(constants::gui_frame_background);
+        drawRect( workFrame->getPositionMin(), workFrame->getPositionMax() );
+
+        //glColor(constants::gui_frame_accent1);
+        //drawHRect( Vec2d::ZERO, getSize()-ProjectionManager::getPixelSize() );
         GuiFrame::draw();
+
     }
 
     virtual void afterResize() {
+
+        GuiFrame::afterResize();
+
         closeBtn->setSizeMin(Vec2d(padding_top.y * 1.5, padding_top.y));
         closeBtn->setPositionMin(Vec2d(getSize().x - closeBtn->getSize().x - padding_bottom.x, 0));
 
         workFrame->setPositionMin(padding_top);
         workFrame->setSizeMin(getSize() - padding_bottom - padding_top);
+
     }
 
     Vec2d dragging_pos;
     bool dragging;
 
     virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
+
         GuiFrame::OnMouseEvent(button, state, mousePos);
 
         if (ClickedGuis.find(button) == ClickedGuis.end()) {

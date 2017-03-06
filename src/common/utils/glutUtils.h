@@ -9,6 +9,7 @@
 #include <ios>
 #include <glew.h>
 #include <freeglut.h>
+#include <iostream>
 
 #include "Vec2d.h"
 #include "mathUtils.h"
@@ -64,15 +65,19 @@ private:
             unsigned long bgra =std::stoul(str, nullptr, 16);
             unsigned char* colors = reinterpret_cast<unsigned char*>(&bgra);
 
-            r = colors[2];
-            g = colors[1];
-            b = colors[0];
-            a = colors[3];
-
             size_t str_length = strlen(str);
             if (str_length <= 8) {
+                r = colors[2];
+                g = colors[1];
+                b = colors[0];
                 a = 255;
+            } else {
+                r = colors[3];
+                g = colors[2];
+                b = colors[1];
+                a = colors[0];
             }
+
         }
 
 
@@ -135,17 +140,14 @@ inline void drawHRect(Vec2d p1, Vec2d p2) {
     glEnd();
 }
 
+void print();
 
-class safePushMatrix {
-public:
-    safePushMatrix() {
-        glPushMatrix();
-    }
-
-    ~safePushMatrix() {
-        glPopMatrix();
-    }
-};
+template<typename T, typename ...TAIL>
+void print(const T &t, TAIL... tail)
+{
+    std::cout<<t<<' ';
+    print(tail...);
+}
 
 template<GLenum T>
 class pixelSize;

@@ -69,7 +69,7 @@ public:
         mapped_mem = (Color*)glMapBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, GL_WRITE_ONLY_ARB);
 
         //Unbind buffer
-        glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, pboId);
+        glBindBufferARB(GL_PIXEL_UNPACK_BUFFER_ARB, 0);
     }
 
     void updatePixels() {
