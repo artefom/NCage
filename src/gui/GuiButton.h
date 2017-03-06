@@ -57,10 +57,12 @@ public:
 
     virtual void OnMouseEnter() {
         isHovered = true;
+        Update();
     }
 
     virtual void OnMouseLeave() {
         isHovered = false;
+        Update();
     }
 
     // Mouse event in relative coordinates
@@ -81,6 +83,7 @@ public:
 
                 isPressed = false;
             }
+            Update();
         }
 
     }

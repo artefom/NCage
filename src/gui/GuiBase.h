@@ -11,6 +11,7 @@
 #include <functional>
 #include <Vec2d.h>
 #include <iostream>
+#include <utils/glutUtils.h>
 #include "Event.h"
 
 
@@ -32,6 +33,8 @@ public:
     Event< std::function< void() > > AfterResizeEvent;
     Event< std::function< void() > > MouseEnterEvent;
     Event< std::function< void() > > MouseLeaveEvent;
+
+    Event< std::function< void() > > UpdateEvent;
 
     bool should_update;
 
@@ -89,16 +92,24 @@ public:
 
     virtual void afterResize();
 
-    virtual void preDraw() {
+    virtual void pushBuffer() {
 
     };
 
     virtual void draw();
 
-    virtual void postDraw() {
+    virtual void popBuffer() {
 
     };
 
+    virtual void Update() {
+        should_update = true;
+        UpdateEvent();
+    }
+
+    virtual void drawBuffered() {
+        draw();
+    }
 
     // Mouse event in relative coordinates
     virtual void OnMouseEvent(int button, int state, Vec2d mousePos);

@@ -48,15 +48,8 @@ int main(int argc, cstring argv[]) {
     glClearColor(0.0,0.0,0.0,0.0);
 
     //glEnable(GL_SCISSOR_TEST);
-    //glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
+    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
     glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
-
-    //glEnable(GL_BLEND);
-    //glEnable(GL_TEXTURE_2D);
-    //glEnable(GL_ALPHA_TEST);
-
-    //glBlendFunc (GL_ONE, GL_ONE);
-
 
     glDisable(GL_LIGHTING);
 
@@ -157,9 +150,9 @@ void resize(int w, int h) {
 
 void MouseFunc(int button, int state, int x, int y) {
 
-    print("Mouse:",x,ProjectionManager::SCR_SIZE.y-y);
-
-    print("Local:",ProjectionManager::unProject(Vec2i(x,ProjectionManager::SCR_SIZE.y-y)));
+//    print("Mouse:",x,ProjectionManager::SCR_SIZE.y-y);
+//
+//    print("Local:",ProjectionManager::unProject(Vec2i(x,ProjectionManager::SCR_SIZE.y-y)));
 
     Vec2d local_mpos = ProjectionManager::unProjectMouse(Vec2i(x,y));
 

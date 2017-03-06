@@ -9,7 +9,6 @@
 
 void GuiManager::Init() {
     GuiRoot = GuiFactory::create<GuiFrame>();
-    std::cout << "Hello from Gui manager initialization" << std::endl;
 }
 
 void GuiManager::OnMouseMove(Vec2d mouse_pos) {
@@ -51,9 +50,9 @@ void GuiManager::PostInit() {
 void GuiManager::draw() {
 
 
-    GuiRoot->preDraw();
-    GuiRoot->draw();
-    GuiRoot->postDraw();
+    //GuiRoot->pushBuffer();
+    GuiRoot->drawBuffered();
+    //GuiRoot->popBuffer();
 }
 
 SafeQueue<int> GuiManager::input_events;

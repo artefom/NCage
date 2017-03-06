@@ -49,15 +49,16 @@ public:
         padding_top = Vec2d(4, 15);
         padding_bottom = Vec2d(4, 4);
 
+    }
+
+    virtual void postInit() {
+
         closeBtn = GuiFactory::create<CloseButton>();
         add(closeBtn);
 
         workFrame = GuiFactory::create<GuiFrame>();
         add(workFrame);
 
-    }
-
-    virtual void postInit() {
         GuiFrame::postInit();
         closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick, self, this);
     }
@@ -130,6 +131,7 @@ public:
 
         if (dragging) {
             setPositionMin(getPositionMin() + (mousePos - dragging_pos));
+            Update();
         }
 
         GuiFrame::OnMouseMove(mousePos);

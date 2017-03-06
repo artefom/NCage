@@ -113,10 +113,10 @@ void GuiFrame::draw() {
             safePushMatrix mat;
             glTranslate(v->getPositionMin());
 //
-//            v->drawBuffered();
-            v->preDraw();
-            v->draw();
-            v->postDraw();
+            v->drawBuffered();
+//            v->pushBuffer();
+//            v->draw();
+//            v->popBuffer();
 //
 //            glColor( Color(0,255,0) );
 //            drawRect(Vec2d(0,0),Vec2d(5,5));

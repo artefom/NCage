@@ -44,6 +44,7 @@ public:
     {
         //texture_span = getSize()*0.9;
         setRenderMode(constants::CULL_TEXTURE);
+
     }
 
     void setRenderMode(constants::FRAME_CULL_MODE mode) {
@@ -54,22 +55,27 @@ public:
         } else {
             cull_tex.Destroy();
         }
+
+        Update();
     }
 
     void updateTexture() {
         //if (cull_tex.isInitialized()) return;
 
-        Vec2i min_pos = ProjectionManager::project_i(Vec2d::ZERO);
-        Vec2i max_pos = ProjectionManager::project_i(getSize());
-        Vec2i size = mutils::abs(max_pos-min_pos);//+Vec2i(1,1);
+        if (cull_mode == constants::CULL_TEXTURE) {
 
-        if (size.x == 0 || size.y == 0)
-            return;
+            Vec2i min_pos = ProjectionManager::project_i(Vec2d::ZERO);
+            Vec2i max_pos = ProjectionManager::project_i(getSize());
+            Vec2i size = mutils::abs(max_pos - min_pos);//+Vec2i(1,1);
+
+            if (size.x == 0 || size.y == 0)
+                return;
 
 //        print("Texture updated:",getSize());
 //        print("Texture size:",size);
 
-        cull_tex.Init(size);
+            cull_tex.Init(size);
+        }
     }
 
     constants::FRAME_CULL_MODE getRenderMode() const {
@@ -87,34 +93,37 @@ public:
     // Mouse event when cursor moves over current gui instance
     virtual void OnMouseMove(Vec2d mousePos);
 
-    virtual void preDraw() {
+    virtual void pushBuffer() {
+        cull_tex.bind();
 
-        if (cull_mode == constants::CULL_TEXTURE) {
+        //print(cull_tex.getSize());
 
-            cull_tex.bind();
+        glPushMatrix();
 
-            //print(cull_tex.getSize());
+        glLoadIdentity();
 
-            glPushMatrix();
-
-            glLoadIdentity();
-
-            glClear(GL_COLOR_BUFFER_BIT);
-        } else if (cull_mode == constants::CULL_SCISSOR) {
-
-        }
-
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     virtual void draw();
 
-    virtual void postDraw() {
+    virtual void popBuffer() {
+
+        glPopMatrix();
+
+        cull_tex.unbind();
+    }
+
+    virtual void drawBuffered() {
 
         if (cull_mode == constants::CULL_TEXTURE) {
 
-            glPopMatrix();
-
-            cull_tex.unbind();
+            if (should_update) {
+                pushBuffer();
+                draw();
+                popBuffer();
+                should_update = false;
+            }
 
             Vec2d tex_p1 = Vec2d::ZERO;
             Vec2d tex_p2 = getSize();
@@ -143,17 +152,27 @@ public:
             glDisable(GL_TEXTURE_2D);
         } else if (cull_mode == constants::CULL_SCISSOR) {
 
+        } else if (cull_mode == constants::CULL_NONE) {
+            draw();
         }
+
     }
 
     virtual void add(std::shared_ptr<GuiBase> gui) {
+
         children.push_back(gui);
+
+        gui->UpdateEvent.add_weak(std::bind(&GuiFrame::Update,this),self);
+
+        Update();
     }
 
     virtual void afterResize() {
         GuiBase::afterResize();
         //texture_span = getSize()*0.9;
         updateTexture();
+
+        Update();
     }
 
 };
