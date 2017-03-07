@@ -40,10 +40,12 @@ public:
 
     //Vec2d texture_span;
 
-    GuiFrame()
+
+    GuiFrame(const std::weak_ptr<GuiFrame>&& i_self,
+             constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_NONE) : GuiBase(i_self)
     {
         //texture_span = getSize()*0.9;
-        setRenderMode(constants::CULL_TEXTURE);
+        setRenderMode(i_cull_mode);
 
     }
 

@@ -38,15 +38,7 @@ public:
 
     bool should_update;
 
-    GuiBase();
-
-    inline void setSelf(std::weak_ptr<GuiBase> i_self) {
-
-        self = i_self;
-
-    }
-
-    virtual void postInit();
+    GuiBase(const std::weak_ptr<GuiBase>&& i_self);
 
     inline Vec2d getPositionMin() const {
         return pos_min;

@@ -4,7 +4,8 @@
 
 #include "GuiBase.h"
 
-GuiBase::GuiBase() :
+GuiBase::GuiBase(const std::weak_ptr<GuiBase>&& i_self) :
+        self(i_self),
         pos_min(0,0),
         pos_max(0,0),
         parent(0),
@@ -27,8 +28,6 @@ void GuiBase::draw() {
 void GuiBase::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
 }
-
-void GuiBase::postInit() {}
 
 void GuiBase::OnMouseMove(Vec2d mousePos) {
 

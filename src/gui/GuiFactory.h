@@ -14,13 +14,25 @@ public:
 
     template<class T> static std::shared_ptr<T> create(){
 
-        std::shared_ptr<T> ret = std::make_shared<T>();
+        T* raw_ptr = reinterpret_cast<T*>( new char[sizeof(T)] );
 
-        ret->setSelf(ret);
+        std::shared_ptr<T> ret = std::shared_ptr<T>(raw_ptr);
 
-        ret->postInit();
+        new (ret.get()) T( move( std::weak_ptr<T>(ret) ) );
 
         return ret;
+
+    }
+
+    template<class T, class A1> static std::shared_ptr<T> create(A1 arg1){
+
+            T* raw_ptr = reinterpret_cast<T*>( new char[sizeof(T)] );
+
+            std::shared_ptr<T> ret = std::shared_ptr<T>(raw_ptr);
+
+            new (ret.get()) T( move( std::weak_ptr<T>(ret) ), arg1 );
+
+            return ret;
 
     }
 

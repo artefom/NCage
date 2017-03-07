@@ -18,19 +18,16 @@ public:
 
     Event< std::function< void() > > MouseClickEvent;
 
-    GuiButton( ) {
+    GuiButton(const std::weak_ptr<GuiButton>&& i_self) : GuiBase(i_self) {
 
         isPressed = false;
         isHovered = false;
 
+        MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
+
        // MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
 //        MouseClickEvent.connect(&GuiButton::hello, this, 1);
         //MouseClickEvent.add( std::bind(&GuiButton::OnClick, this ) );
-    }
-
-    virtual void postInit() {
-        GuiBase::postInit();
-        MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
     }
 
     virtual void draw() {

@@ -15,6 +15,11 @@ public:
 
 
     class CloseButton : public GuiButton {
+
+    public:
+
+        CloseButton(const std::weak_ptr<CloseButton>&& i_self) : GuiButton(i_self) {};
+
         virtual void draw() {
             if (isPressed && isHovered) {
                 glColor(constants::gui_close_button_pressed);
@@ -42,16 +47,13 @@ public:
 
     std::shared_ptr<GuiView> viewGui;
 
-    GuiWindow() {
+    GuiWindow(const std::weak_ptr<GuiWindow>&& i_self,
+              constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_TEXTURE) : GuiFrame(i_self,i_cull_mode) {
         std::cout << "Gui window created!" << std::endl;
 
         dragging = false;
         padding_top = Vec2d(4, 15);
         padding_bottom = Vec2d(4, 4);
-
-    }
-
-    virtual void postInit() {
 
         closeBtn = GuiFactory::create<CloseButton>();
         add(closeBtn);
@@ -59,9 +61,9 @@ public:
         workFrame = GuiFactory::create<GuiFrame>();
         add(workFrame);
 
-        GuiFrame::postInit();
         closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick, self, this);
     }
+
 
     virtual void draw() {
         //glColor4f(0.8,0.5,0.3,0.5);

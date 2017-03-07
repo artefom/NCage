@@ -12,6 +12,8 @@
 class GuiTextureView : public GuiView {
 public:
 
+    GuiTextureView(const std::weak_ptr<GuiTextureView>&& i_self) : GuiView(i_self) {};
+
     virtual void localDraw() {
 
         glColor(Color(255,0,0));

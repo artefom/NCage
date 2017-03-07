@@ -30,7 +30,7 @@ public:
 
     //PBOTexture<512,512,GL_RGBA> tex;
 
-    GuiView();
+    GuiView(const std::weak_ptr<GuiView>&& i_self);
 
 
     // INLINE FUNCTIONS

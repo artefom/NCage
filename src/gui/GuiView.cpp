@@ -5,7 +5,7 @@
 #include "GuiView.h"
 #include "ProjectionManager.h"
 
-GuiView::GuiView() {
+GuiView::GuiView(const std::weak_ptr<GuiView>&& i_self) : GuiBase(i_self) {
     position = Vec2d::ZERO;
 
     setScaleMin(Vec2d(0.000001,0.000001));
@@ -33,6 +33,8 @@ void GuiView::setScale(Vec2d i_scale) {
 
     scale = i_scale;
     scale_inv = 1.0/scale;
+
+    Update();
 }
 
 void GuiView::setScaleMin(Vec2d i_scale_min) {
@@ -59,6 +61,8 @@ void GuiView::setScaleMax(Vec2d i_scale_max) {
 
 void GuiView::setCellSize(Vec2d i_cell_size) {
     cell_size = i_cell_size;
+
+    Update();
 }
 
 void GuiView::rescale(double value, Vec2d pivot) {
@@ -96,6 +100,8 @@ void GuiView::setPosition(Vec2d pos) {
     if (mutils::isinf_any(pos) || mutils::isnan_any(pos)) return;
 
     position = pos;
+
+    Update();
 }
 
 void GuiView::OnMouseMove(Vec2d mousePos) {

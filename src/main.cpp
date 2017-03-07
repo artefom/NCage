@@ -144,7 +144,7 @@ void resize(int w, int h) {
     //ProjectionManager::updateView( Vec2i::ZERO, size_i );
 //    ProjectionManager::setupPro jection( size_i, size_d );
 
-    GuiManager::OnResize( ProjectionManager::getViewportObjSize() );
+    GuiManager::OnResize(ProjectionManager::getViewportObjSize());
 
 }
 
