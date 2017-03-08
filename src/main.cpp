@@ -95,16 +95,12 @@ void PassiveMouseMove(int x, int y) {
 
 void renderScene(void) {
 
-    // Clear all
-
-    //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_SCISSOR_TEST);
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
-    glClear(GL_COLOR_BUFFER_BIT);
-    //glBlendFunc(GL_ONE, GL_ONE);
+    //glClear(GL_COLOR_BUFFER_BIT);
 
     GuiManager::draw();
 
@@ -122,27 +118,18 @@ void setupProjection(int w, int h) {
 
     ProjectionManager::setScreenSize(size_i);
     //ProjectionManager::setScale(Vec2d(0.5,0.5));
-    //ProjectionManager::setScreenSize(Vec2d(1,1));
-
-    //ProjectionManager::setScissor(Vec2i::ZERO,size_i);
     ProjectionManager::setViewportProjection(Vec2i::ZERO,size_i);
 }
 
 void resize(int w, int h) {
 
     setupProjection(w,h);
-    //ProjectionManager::updateView( Vec2i::ZERO, size_i );
-//    ProjectionManager::setupPro jection( size_i, size_d );
 
     GuiManager::OnResize(ProjectionManager::getViewportObjSize());
 
 }
 
 void MouseFunc(int button, int state, int x, int y) {
-
-//    print("Mouse:",x,ProjectionManager::SCR_SIZE.y-y);
-//
-//    print("Local:",ProjectionManager::unProject(Vec2i(x,ProjectionManager::SCR_SIZE.y-y)));
 
     Vec2d local_mpos = ProjectionManager::unProjectMouse(Vec2i(x,y));
 

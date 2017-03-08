@@ -46,67 +46,21 @@ public:
 
 
     GuiFrame(const std::weak_ptr<GuiFrame>&& i_self,
-             constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_SCISSOR) :
-            GuiBase(i_self),
-            resized(false)
-    {
-        //texture_span = getSize()*0.9;
-        setRenderMode(i_cull_mode);
+             constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_SCISSOR);
 
-    }
+    void setRenderMode(constants::FRAME_CULL_MODE mode);
 
-    void setRenderMode(constants::FRAME_CULL_MODE mode) {
-        cull_mode = mode;
+    // Update texture size when cull_mode is CULL_TEXTURE
+    // Does not redraw children objects
+    void updateTexture();
 
-        if (cull_mode == constants::CULL_TEXTURE && !cull_tex.isInitialized()) {
+    // Update scissor position when cull_mode is CULL_SCISSOR
+    // Sets scissor boundaries to match current frame in pixel coordinates
+    // by projecting frame boundaries into pixels
+    // (see gluProject(), ProjectManager::project_i )
+    void updateScissor();
 
-            Vec2i min_pos = ProjectionManager::project_i(Vec2d::ZERO);
-            Vec2i max_pos = ProjectionManager::project_i(getSize());
-            Vec2i size = Vec2i::apply<std::abs>(max_pos - min_pos);//+Vec2i(1,1);
-            cull_tex.Init(size);
-
-        } else {
-            cull_tex.Destroy();
-        }
-
-        resized = false;
-
-        Update();
-    }
-
-    void updateTexture() {
-
-        Vec2i min_pos = ProjectionManager::project_i(Vec2d::ZERO);
-        Vec2i max_pos = ProjectionManager::project_i(getSize());
-        Vec2i size = Vec2i::apply<std::abs>(max_pos - min_pos);//+Vec2i(1,1);
-
-        if (size.x == 0 || size.y == 0)
-            return;
-
-        if ((cull_tex.getSize() != size).any()) {
-            cull_tex.resize(size);
-        }
-
-    }
-
-    void updateScissor() {
-
-        Vec2i p1 = ProjectionManager::project_i(Vec2d::ZERO);
-        Vec2i p2 = ProjectionManager::project_i(getSize());
-
-        Vec2i size = mutils::abs(p1 - p2);
-        Vec2i pos_min = mutils::min(p1, p2);
-
-
-        scissor_min = pos_min;
-        scissor_size = size;
-
-        //scissor_size = mutils::abs(max_pos - scissor_min);
-    }
-
-    constants::FRAME_CULL_MODE getRenderMode() const {
-        return cull_mode;
-    }
+    constants::FRAME_CULL_MODE getRenderMode() const;
 
     // Mouse event in relative coordinates
     // Internal function (tight bounds)
@@ -119,6 +73,11 @@ public:
     // Mouse event when cursor moves over current gui instance
     virtual void OnMouseMove(Vec2d mousePos);
 
+    // Setups everything to be rendered into texture through FBO
+    // Pushes new Viewport and binds frame buffer, resets scissor box
+    // All this is done through FBTexture class with method FBTexture::bind()
+    // this method estimates texture size (in pixels) through unprojecting current position
+    // see (ProjectionManager::project_i)
     virtual void pushBuffer() {
         cull_tex.bind();
 
@@ -131,88 +90,29 @@ public:
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
+    // Draws frame and its children into screen or int texture (if pushBuffer was called before)
     virtual void draw();
 
-    virtual void popBuffer() {
+    // Undrolls changes of pushBuffer() into Viewport/Scissor/FBO settings
+    virtual void popBuffer();
 
-        glPopMatrix();
 
-        cull_tex.unbind();
-    }
+    // Draw frame and its children into screen
+    // (Texture can be drawn if no changes were made (see Update()) since last draw)
+    virtual void drawBuffered();
 
-    virtual void drawBuffered() {
+    // Add new element to current window. This element should have self member to be set to refer itself's class
+    // Like so
+    // Class A { std::weak_ref<A> self{this}
+    // sadly, this is hard to be accomplished in normal ways, so pointer to self is passed as parameter to
+    // constructor of Any gui class by GuiFactory (which should be used to create any gui class)
+    virtual void add(std::shared_ptr<GuiBase> gui);
 
-        if (cull_mode == constants::CULL_TEXTURE) {
-
-            if (resized) {
-                updateTexture();
-                resized = false;
-            }
-
-            if (should_update) {
-                pushBuffer();
-                draw();
-                popBuffer();
-                should_update = false;
-            }
-
-            Vec2d tex_p1 = Vec2d::ZERO;
-            Vec2d tex_p2 = getSize();
-
-            glEnable(GL_TEXTURE_2D);
-
-            glBindTexture(GL_TEXTURE_2D, cull_tex.getTexId());
-
-            glColor4f(1, 1, 1, 1);
-            glBegin(GL_QUADS);
-
-            //glNormal3f(0, 0, 1);
-
-            glTexCoord2f(0.0f, 1.0f);
-            glVertex2d(tex_p1.x, tex_p1.y);
-            glTexCoord2f(1.0f, 1.0f);
-            glVertex2d(tex_p2.x, tex_p1.y);
-            glTexCoord2f(1.0f, 0.0f);
-            glVertex2d(tex_p2.x, tex_p2.y);
-            glTexCoord2f(0.0f, 0.0f);
-            glVertex2d(tex_p1.x, tex_p2.y);
-
-            glEnd();
-            // unbind texture
-            glBindTexture(GL_TEXTURE_2D, 0);
-            glDisable(GL_TEXTURE_2D);
-        } else if (cull_mode == constants::CULL_SCISSOR) {
-
-            updateScissor();
-
-            ProjectionManager::pushScissor();
-            ProjectionManager::setScissorClamped(scissor_min, scissor_size);
-
-            draw();
-
-            ProjectionManager::popScissor();
-
-        } else if (cull_mode == constants::CULL_NONE) {
-            draw();
-        }
-
-    }
-
-    virtual void add(std::shared_ptr<GuiBase> gui) {
-
-        children.push_back(gui);
-
-        gui->UpdateEvent.add_weak(std::bind(&GuiFrame::Update,this),self);
-
-        Update();
-    }
-
-    virtual void afterResize() {
-        GuiBase::afterResize();
-        resized = true;
-
-        Update();
-    }
+    // Function, called after resize
+    // Sets flags, so window knows it's been resized and update is needed
+    // (texture resize in case cull_mode == CULL_TEXTURE)
+    // Also, calles Update()
+    virtual void afterResize();
 
 };
 

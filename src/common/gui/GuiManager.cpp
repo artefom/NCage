@@ -3,12 +3,13 @@
 //
 
 #include "GuiManager.h"
-#include "GuiTextureView.h"
 #include "BackgroundWorker.h"
-#include <iostream>
+
+bool GuiManager::root_needs_update{true};
 
 void GuiManager::Init() {
     GuiRoot = GuiFactory::create<GuiFrame>();
+    GuiRoot->UpdateEvent.add(std::bind(&GuiManager::Update));
 }
 
 void GuiManager::OnMouseMove(Vec2d mouse_pos) {
@@ -29,10 +30,10 @@ void GuiManager::terminate() {
 void GuiManager::OnResize(Vec2d size) {
 
     GuiRoot->setPositionMin( Vec2d::ZERO );
-    GuiRoot->setSizeMin( Vec2i( size*0.5 ) );
+    GuiRoot->setSizeMin(Vec2i(size));
 
     render_view->setPositionMin( Vec2d::ZERO );
-    render_view->setSizeMin( size*0.25 );
+    render_view->setSizeMin(size);
 }
 
 void GuiManager::PostInit() {
@@ -49,10 +50,17 @@ void GuiManager::PostInit() {
 
 void GuiManager::draw() {
 
+    // draw only if root needs to be updated
+    if (root_needs_update) {
+        root_needs_update = false;
+        glClear(GL_COLOR_BUFFER_BIT);
+        GuiRoot->drawBuffered();
+    }
 
-    //GuiRoot->pushBuffer();
-    GuiRoot->drawBuffered();
-    //GuiRoot->popBuffer();
+}
+
+void GuiManager::Update() {
+    root_needs_update = true;
 }
 
 SafeQueue<int> GuiManager::input_events;

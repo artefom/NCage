@@ -18,72 +18,18 @@ public:
 
     Event< std::function< void() > > MouseClickEvent;
 
-    GuiButton(const std::weak_ptr<GuiButton>&& i_self) : GuiBase(i_self) {
+    GuiButton(const std::weak_ptr<GuiButton> &&i_self);
 
-        isPressed = false;
-        isHovered = false;
+    virtual void draw();
 
-        MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
+    virtual void OnClick();
 
-       // MouseClickEvent.connect_weak(&GuiButton::OnClick, self, this);
-//        MouseClickEvent.connect(&GuiButton::hello, this, 1);
-        //MouseClickEvent.add( std::bind(&GuiButton::OnClick, this ) );
-    }
+    virtual void OnMouseEnter();
 
-    virtual void draw() {
-        if (isPressed && isHovered) {
-            glColor(constants::gui_button_pressed);
-        } else
-        if (!isPressed && isHovered){
-            glColor(constants::gui_button_hover);
-        } else {
-            glColor(constants::gui_frame_foreground);
-        }
-
-        drawRect(Vec2d::ZERO,getSize());
-
-        glColor(constants::gui_frame_accent1);
-
-        drawHRect(Vec2d::ZERO,getSize());
-
-    }
-
-    virtual void OnClick() {
-        std::cout << "Hello, i'm button!" << std::endl;
-    }
-
-    virtual void OnMouseEnter() {
-        isHovered = true;
-        Update();
-    }
-
-    virtual void OnMouseLeave() {
-        isHovered = false;
-        Update();
-    }
+    virtual void OnMouseLeave();
 
     // Mouse event in relative coordinates
-    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
-
-        GuiBase::OnMouseEvent(button,state,mousePos);
-        // Right mouse down
-        if (button == 0) {
-            if (state == 0) {
-                // Mouse down case
-                isPressed = true;
-            } else {
-                // Mouse up case
-
-                if (isPressed && isHovered) {
-                    MouseClickEvent();
-                }
-
-                isPressed = false;
-            }
-            Update();
-        }
-
-    }
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos);
 
 
 protected:

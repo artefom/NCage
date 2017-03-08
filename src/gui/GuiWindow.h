@@ -19,25 +19,9 @@ public:
 
     public:
 
-        CloseButton(const std::weak_ptr<CloseButton>&& i_self) : GuiButton(i_self) {};
+        CloseButton(const std::weak_ptr<CloseButton> &&i_self);;
 
-        virtual void draw() {
-            if (isPressed && isHovered) {
-                glColor(constants::gui_close_button_pressed);
-            } else if (!isPressed && isHovered) {
-                glColor(constants::gui_close_button_hover);
-            } else {
-                glColor(constants::gui_close_button);
-            }
-
-            drawRect(Vec2d::ZERO, getSize());
-
-            Vec2d real_size = getSize();
-            real_size.y-=ProjectionManager::getPixelSize().y;
-
-            glColor(constants::gui_close_button);
-            drawHRect(Vec2d::ZERO, real_size);
-        }
+        virtual void draw();
     };
 
     Vec2d padding_top;
@@ -49,107 +33,22 @@ public:
     std::shared_ptr<GuiView> viewGui;
 
     GuiWindow(const std::weak_ptr<GuiWindow>&& i_self,
-              constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_SCISSOR) : GuiFrame(i_self, i_cull_mode) {
-        std::cout << "Gui window created!" << std::endl;
-
-        dragging = false;
-        padding_top = Vec2d(4, 15);
-        padding_bottom = Vec2d(4, 4);
-
-        closeBtn = GuiFactory::create<CloseButton>();
-        add(closeBtn);
-
-        workFrame = GuiFactory::create<GuiFrame>(constants::CULL_SCISSOR);
-        add(workFrame);
-
-        std::shared_ptr<GuiTextureView> tw = GuiFactory::create<GuiTextureView>();
-
-        tw->setPositionMin(Vec2i(-10, -10));
-        tw->setSizeMin(Vec2i(50, 50));
-
-        workFrame->add(tw);
-
-        closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick, self, this);
-    }
+              constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_TEXTURE);
 
 
-    virtual void draw() {
-        //glColor4f(0.8,0.5,0.3,0.5);
-        //glColor(constants::gui_frame_foreground);
+    virtual void draw();
 
+    virtual void afterResize();
 
-        // If rendering to texuture, dont mix color with Black background
-        // Instead, pass full colod
-        if (cull_mode == constants::CULL_TEXTURE) {
-            glBlendFunc(GL_ONE,GL_ONE);
+    virtual void OnMouseEvent(int button, int state, Vec2d mousePos);
 
-            glColor(constants::gui_frame_foreground);
-            drawRect( Vec2d::ZERO, getSize() );
+    virtual void OnMouseMove(Vec2d mousePos);
 
-            glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
-        } else {
-            glColor(constants::gui_frame_foreground);
-            drawRect( Vec2d::ZERO, getSize() );
-        }
+    virtual void OnCloseButtonClick();
 
-
-
-
-        glColor(constants::gui_frame_accent1);
-        drawHRect( workFrame->getPositionMin()-ProjectionManager::getPixelSize(), workFrame->getPositionMax() );
-
-        glColor(constants::gui_frame_background);
-        drawRect( workFrame->getPositionMin(), workFrame->getPositionMax() );
-
-        //glColor(constants::gui_frame_accent1);
-        //drawHRect( Vec2d::ZERO, getSize()-ProjectionManager::getPixelSize() );
-        GuiFrame::draw();
-
-    }
-
-    virtual void afterResize() {
-
-        GuiFrame::afterResize();
-
-        closeBtn->setSizeMin(Vec2d(padding_top.y * 1.5, padding_top.y));
-        closeBtn->setPositionMin(Vec2d(getSize().x - closeBtn->getSize().x - padding_bottom.x, 0));
-
-        workFrame->setPositionMin(padding_top);
-        workFrame->setSizeMin(getSize() - padding_bottom - padding_top);
-
-    }
-
+protected:
     Vec2d dragging_pos;
     bool dragging;
-
-    virtual void OnMouseEvent(int button, int state, Vec2d mousePos) {
-
-        GuiFrame::OnMouseEvent(button, state, mousePos);
-
-        if (ClickedGuis.find(button) == ClickedGuis.end()) {
-            if (button == 0 && state == 0) {
-                dragging = true;
-                dragging_pos = mousePos;
-            } else {
-                dragging = false;
-            }
-        }
-
-    }
-
-    virtual void OnMouseMove(Vec2d mousePos) {
-
-        if (dragging) {
-            setPositionMin(getPositionMin() + (mousePos - dragging_pos));
-            Update();
-        }
-
-        GuiFrame::OnMouseMove(mousePos);
-    }
-
-    virtual void OnCloseButtonClick() {
-        std::cout << "Closing window!" << std::endl;
-    }
 
 };
 

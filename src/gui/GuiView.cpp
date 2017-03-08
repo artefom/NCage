@@ -11,7 +11,7 @@ GuiView::GuiView(const std::weak_ptr<GuiView> &&i_self) :
         GuiBase(i_self) {
     position = Vec2d::ZERO;
 
-    setScaleMin(Vec2d(0.000001,0.000001));
+    setScaleMin(Vec2d(0.1, 0.1));
     setScaleMax(Vec2d(100000,100000));
     setScale(Vec2d::ONE);
 
@@ -31,10 +31,11 @@ void GuiView::setScale(Vec2d i_scale) {
     // fool proof
     if (mutils::isnan(i_scale).any() || mutils::isinf(i_scale).any()) return;
 
+    scale = i_scale;
+
     scale.x = mutils::clamp(scale.x,scale_min.x,scale_max.x);
     scale.y = mutils::clamp(scale.y,scale_min.y,scale_max.y);
 
-    scale = i_scale;
     scale_inv = Vec2d(1, 1) / scale;
 
     Update();
@@ -120,8 +121,6 @@ void GuiView::OnMouseMove(Vec2d mousePos) {
 
 }
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "TemplateArgumentsIssues"
 void GuiView::draw() {
     draw_background();
 
@@ -133,7 +132,7 @@ void GuiView::draw() {
         Vec2i p2 = ProjectionManager::project_i(getSize());
 
         Vec2i size = mutils::abs(p1 - p2);
-        Vec2i pos_min = Vec2i::apply<mutils::min>(p1, p2);
+        Vec2i pos_min = mutils::min(p1, p2);
 
         ProjectionManager::pushScissor();
         ProjectionManager::setScissorClamped(pos_min, size);
@@ -147,7 +146,6 @@ void GuiView::draw() {
 
     draw_grids();
 }
-#pragma clang diagnostic pop
 
 void GuiView::localDraw() {
 
@@ -222,14 +220,14 @@ void GuiView::draw_grids() {
 
 
     glColor(grid_pivot_color);
-    if (pivot.x > 0 && pivot.x < getSize().x) {
+    if (pivot.x >= 0 && pivot.x < getSize().x) {
         glBegin(GL_LINES);
         glVertex2d(pivot.x,0);
         glVertex2d(pivot.x,getSize().y);
         glEnd();
     }
 
-    if (pivot.y > 0 && pivot.y < getSize().y) {
+    if (pivot.y >= 0 && pivot.y < getSize().y) {
         glBegin(GL_LINES);
         glVertex2d(0,pivot.y);
         glVertex2d(getSize().x,pivot.y);

@@ -47,9 +47,13 @@ public:
     // Draw call
     static void draw();
 
+    static void Update();
+
 private:
 
     static std::shared_ptr<GuiFrame> GuiRoot;
+
+    static bool root_needs_update;
 
     GuiManager() {};
 
