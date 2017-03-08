@@ -6,6 +6,7 @@
 #define PLAYIN_FBTEXTURE_H
 
 #include <ProjectionManager.h>
+#include <cassert>
 #include "glutUtils.h"
 #include "AttributeStack.h"
 
@@ -31,8 +32,11 @@ public:
     }
 
     void Init(Vec2i i_size) {
-        if (initialized) Destroy();
-        initialized = true;
+
+        assert(!isInitialized());
+
+        if (initialized)
+            return;
 
         size = i_size;
 
@@ -72,14 +76,32 @@ public:
         glBindTexture(GL_TEXTURE_2D, 0);
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        initialized = true;
+    }
+
+    void resize(Vec2i i_size) {
+
+        assert(isInitialized());
+        assert(texId != 0);
+
+        size = i_size;
+
+        glBindTexture(GL_TEXTURE_2D, texId);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+        glBindTexture(GL_TEXTURE_2D, 0);
+
     }
 
     void Destroy() {
         if (!initialized) return;
         initialized = false;
 
-        glDeleteTextures(1,&texId);
-        glDeleteFramebuffers(1,&fbId);
+        assert(texId != 0);
+        assert(fbId != 0);
+
+        glDeleteTextures(1, &texId);
+        glDeleteFramebuffers(1, &fbId);
 
         texId = 0;
         fbId = 0;
@@ -91,24 +113,18 @@ public:
 
     void bind() {
 
+        assert(isInitialized());
+
         AttributeStack::pushFrameBuffer(fbId);
 
         ProjectionManager::pushViewportProjection();
         ProjectionManager::setViewportProjection( Vec2i(0,0), getSize() );
 
-        //ProjectionManager::pushScissor();
-        //ProjectionManager::setScissor(Vec2i(0, 0), getSize());
-
-        //AttributeStack::pushTexture(texId);
     }
 
     void unbind() {
-
-        //ProjectionManager::popScissor();
         ProjectionManager::popViewportProjection();
         AttributeStack::popFrameBuffer();
-
-        //AttributeStack::popTexture();
     }
 
     bool isInitialized() const {

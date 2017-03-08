@@ -3,7 +3,6 @@
 //
 
 #include "GuiFrame.h"
-#include "ProjectionManager.h"
 
 void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
@@ -32,11 +31,11 @@ void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
             if (state == 0) {
 
-                auto it = ClickedGuis.find(button);
+                auto it2 = ClickedGuis.find(button);
 
-                if (it != ClickedGuis.end()) {
-                    it->second->OnMouseEvent(button, state, localMpos);
-                    ClickedGuis.erase(it);
+                if (it2 != ClickedGuis.end()) {
+                    it2->second->OnMouseEvent(button, state, localMpos);
+                    ClickedGuis.erase(it2);
                 }
 
                 ClickedGuis.insert( std::pair< int, std::shared_ptr<GuiBase> >(button,v) );

@@ -24,7 +24,7 @@ public:
     Color grid_pivot_color;
 
 
-    int highlight_step = 8;
+    int highlight_step;
 
     bool dragging;
 

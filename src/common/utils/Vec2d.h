@@ -9,13 +9,17 @@
 
 #include <type_traits>
 #include <iostream>
+#include <cstdint>
 
 
 template<class T>
 struct Vec2 {
 public:
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
     typedef T ctype;
+#pragma clang diagnostic pop
 
     T x;
     T y;
@@ -80,6 +84,14 @@ public:
         return Vec2<T>( F(vec1.x,vec2.x),F(vec1.y,vec2.y) );
     }
 
+    inline bool all() {
+        return x && y;
+    }
+
+    inline bool any() {
+        return x || y;
+    }
+
 
     static const Vec2 ONE;
     static const Vec2 ZERO;
@@ -114,32 +126,68 @@ inline Vec2<T> operator*(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T
 template<class T>
 inline Vec2<T> operator/(const Vec2<T>& lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs.x/rhs.x,lhs.y/rhs.y); };
 
-// OPERATIONS WITH SCALARS
-template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+//#define define_ops_for(t)\
+//template<class T>\
+//inline Vec2<T> operator+(const Vec2<T>& lhs, t rhs) { return Vec2<T>(lhs.x+rhs,lhs.y+rhs); }\
+//template<class T>\
+//inline Vec2<T> operator-(const Vec2<T>& lhs, t rhs) { return Vec2<T>(lhs.x-rhs,lhs.y-rhs); };\
+//template<class T>\
+//inline Vec2<T> operator*(const Vec2<T>& lhs, t rhs) { return Vec2<T>(lhs.x*rhs,lhs.y*rhs); };\
+//template<class T>\
+//inline Vec2<T> operator/(const Vec2<T>& lhs, t rhs) { return Vec2<T>(lhs.x/rhs,lhs.y/rhs); };\
+//template<class T>\
+//inline Vec2<T> operator+(t lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs+rhs.x,lhs+rhs.y); }\
+//template<class T>\
+//inline Vec2<T> operator-(t lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs-rhs.x,lhs-rhs.y); };\
+//template<class T>\
+//inline Vec2<T> operator*(t lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs*rhs.x,lhs*rhs.y); };\
+//template<class T>\
+//inline Vec2<T> operator/(t lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs/rhs.x,lhs/rhs.y); };
+//
+//define_ops_for(char)
+//define_ops_for(unsigned char)
+//define_ops_for(short int)
+//define_ops_for(unsigned short int)
+//define_ops_for(int)
+//define_ops_for(unsigned int)
+//define_ops_for(long int)
+//define_ops_for(unsigned long int)
+//define_ops_for(long long int)
+//define_ops_for(unsigned long long int)
+//define_ops_for(float)
+//define_ops_for(double)
+//define_ops_for(long double)
+//
+//#undef define_ops_for
+
+
+//// OPERATIONS WITH SCALARS
+
+template<class T, class T2>
 inline Vec2<T> operator+(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x+rhs,lhs.y+rhs); }
 
-template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+template<class T, class T2>
 inline Vec2<T> operator-(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x-rhs,lhs.y-rhs); };
 
-template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+template<class T, class T2>
 inline Vec2<T> operator*(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x*rhs,lhs.y*rhs); };
 
-template<class T, class T2, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
+template<class T, class T2>
 inline Vec2<T> operator/(const Vec2<T>& lhs, T2 rhs) { return Vec2<T>(lhs.x/rhs,lhs.y/rhs); };
 
-// OPERATIONS WITH SCALARS REVERSED
-
-template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
-inline Vec2<T> operator+(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs+rhs.x,lhs+rhs.y); }
-
-template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
-inline Vec2<T> operator-(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs-rhs.x,lhs-rhs.y); };
-
-template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
-inline Vec2<T> operator*(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs*rhs.x,lhs*rhs.y); };
-
-template<class T2, class T, typename = typename std::enable_if<std::is_arithmetic<T>::value, T2>::type >
-inline Vec2<T> operator/(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs/rhs.x,lhs/rhs.y); };
+////// OPERATIONS WITH SCALARS REVERSED
+//
+//template<class T2, class T>
+//inline Vec2<T> operator+(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs+rhs.x,lhs+rhs.y); }
+//
+//template<class T2, class T>
+//inline Vec2<T> operator-(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs-rhs.x,lhs-rhs.y); };
+//
+//template<class T2, class T>
+//inline Vec2<T> operator*(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs*rhs.x,lhs*rhs.y); };
+//
+//template<class T2, class T>
+//inline Vec2<T> operator/(T2 lhs, const Vec2<T>& rhs) { return Vec2<T>(lhs/rhs.x,lhs/rhs.y); };
 
 // UNARY MINUS
 template<class T>
@@ -148,28 +196,40 @@ inline Vec2<T> operator-(const Vec2<T>& rhs) {return Vec2<T>(-rhs.x,-rhs.y);};
 // COMPARISON OPERATORS
 
 template<class T>
-inline bool operator > (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x > rhs.x && lhs.y > rhs.y; };
+inline Vec2<bool> operator>(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x > rhs.x, lhs.y > rhs.y);
+};
 
 template<class T>
-inline bool operator < (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x > rhs.x && lhs.y > rhs.y; };
+inline Vec2<bool> operator<(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x > rhs.x, lhs.y > rhs.y);
+};
 
 template<class T>
-inline bool operator >= (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x >= rhs.x && lhs.y >= rhs.y; };
+inline Vec2<bool> operator>=(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x >= rhs.x, lhs.y >= rhs.y);
+};
 
 template<class T>
-inline bool operator <= (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x <= rhs.x && lhs.y <= rhs.y; };
+inline Vec2<bool> operator<=(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x <= rhs.x, lhs.y <= rhs.y);
+};
 
 template<class T>
-inline bool operator == (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x == rhs.x && lhs.y == rhs.y; };
+inline Vec2<bool> operator==(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x == rhs.x, lhs.y == rhs.y);
+};
 
 template<class T>
-inline bool operator != (const Vec2<T>& lhs, const Vec2<T>& rhs) { return lhs.x != rhs.x && lhs.y != rhs.y; };
+inline Vec2<bool> operator!=(const Vec2<T> &lhs, const Vec2<T> &rhs) {
+    return Vec2<bool>(lhs.x != rhs.x, lhs.y != rhs.y);
+};
 
 // TYPEDEFS
-typedef Vec2<double> Vec2d;
-typedef Vec2<float> Vec2f;
 
-typedef Vec2<int> Vec2i;
+typedef Vec2<double> Vec2d;
+
+typedef Vec2<int_fast32_t> Vec2i;
 
 //Math functions
 

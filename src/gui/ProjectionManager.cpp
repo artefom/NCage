@@ -5,8 +5,6 @@
 #include "ProjectionManager.h"
 //
 Vec2i ProjectionManager::SCR_SIZE{1,1};
-Vec2i ProjectionManager::VP_SIZE{1,1};
-Vec2i ProjectionManager::VP_OFFSET{1,1};
 Vec2d ProjectionManager::OBJ_SCALE{1,1};
 
 Vec2i ProjectionManager::vp_size;

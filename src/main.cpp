@@ -1,12 +1,8 @@
-#define DEBUG
-
 #include <iostream>
 #include <thread>
 #include <queue>
 #include <glutUtils.h>
-#include <mathUtils.h>
 
-#define bg(x) cout << string("BG: ")+string(x)+string("\n");
 #define gui(x) cout << string("GUI: ")+string(x)+string("\n");
 
 
@@ -14,8 +10,6 @@
 #include "SafeQueue.h"
 #include "BackgroundWorker.h"
 #include "GuiManager.h"
-#include "PBOTexture.h"
-#include "ProjectionManager.h"
 
 using namespace std;
 
@@ -31,8 +25,6 @@ void glutCloseFunc();
 
 void setupProjection(int w, int h);
 
-bool shouldExit = false;
-
 thread bg_thread;
 
 int main(int argc, cstring argv[]) {
@@ -44,8 +36,6 @@ int main(int argc, cstring argv[]) {
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA );
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(window_size.x, window_size.y);
-
-    glClearColor(0.0,0.0,0.0,0.0);
 
     //glEnable(GL_SCISSOR_TEST);
     glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
@@ -107,12 +97,13 @@ void renderScene(void) {
 
     // Clear all
 
-    glClear(GL_COLOR_BUFFER_BIT);
-
     //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+    glClear(GL_COLOR_BUFFER_BIT);
     //glBlendFunc(GL_ONE, GL_ONE);
 
     GuiManager::draw();
@@ -127,14 +118,13 @@ void setupProjection(int w, int h) {
     if (h == 0)
         h = 1;
 
-    Vec2i size_i{(Vec2i::ctype)w,(Vec2i::ctype)h};
-    Vec2d size_d{(Vec2d::ctype)w,(Vec2d::ctype)h};
+    Vec2i size_i{w, h};
 
     ProjectionManager::setScreenSize(size_i);
     //ProjectionManager::setScale(Vec2d(0.5,0.5));
     //ProjectionManager::setScreenSize(Vec2d(1,1));
 
-    ProjectionManager::setScissor(Vec2i::ZERO,size_i);
+    //ProjectionManager::setScissor(Vec2i::ZERO,size_i);
     ProjectionManager::setViewportProjection(Vec2i::ZERO,size_i);
 }
 

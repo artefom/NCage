@@ -42,8 +42,7 @@ void GuiBase::OnMouseLeave() {
 }
 
 bool GuiBase::hasMouse(Vec2d mousepos) {
-    if (mousepos.x < getSize().x && mousepos.x > 0 &&
-        mousepos.y < getSize().y && mousepos.y > 0)
-        return true;
-    return false;
+    return mousepos.x < getSize().x && mousepos.x > 0 &&
+           mousepos.y < getSize().y && mousepos.y > 0 && mousepos.x < getSize().x && mousepos.x > 0 &&
+           mousepos.y < getSize().y && mousepos.y > 0;
 }

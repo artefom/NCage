@@ -25,63 +25,106 @@ namespace mutils {
         return value;
     }
 
-    template<class T>
-    inline bool isnan_any(Vec2<T> vec) {
-        return std::isnan(vec.x) || std::isnan(vec.y);
-    }
+
+//    template<class T>
+//    inline bool isnan_any(Vec2<T> vec) {
+//        return std::isnan(vec.x) || std::isnan(vec.y);
+//    }
+//
+//    template<class T>
+//    inline bool isinf_any(Vec2<T> vec) {
+//        return std::isinf(vec.x) || std::isinf(vec.y);
+//    }
+//
+//    template<class T>
+//    inline bool iszer_any(Vec2<T> vec) {
+//        return (vec.x == 0) || (vec.y == 0);
+//    }
+//
+//    template<class T>
+//    inline bool isneg_any(Vec2<T> vec) {
+//        return (vec.x < 0) || (vec.y < 0);
+//    }
+//
+//    template<class T>
+//    inline bool ispos_any(Vec2<T> vec) {
+//        return (vec.x > 0) || (vec.y > 0);
+//    }
+//
+//    template<class T> Vec2<T> abs( Vec2<T> vec ) {
+//        return Vec2<T>(std::abs(vec.x),std::abs(vec.y));
+//    }
+//
+//    template<class T> Vec2<T> round( Vec2<T> vec ) {
+//        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+//    }
+//
+//    template<class T> Vec2<T> floor( Vec2<T> vec ) {
+//        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+//    }
+//
+//    template<class T> Vec2<T> ceil( Vec2<T> vec ) {
+//        return Vec2<T>(std::round(vec.x),std::round(vec.y));
+//    }
+//
+//    template<class T,T(F)(T)> Vec2<T> apply(Vec2<T> vec) {
+//        return Vec2<T>( F(vec.x),F(vec.y) );
+//    }
+//
+//    template<class T,T(F)(T,T)> Vec2<T> apply(Vec2<T> vec1, Vec2<T> vec2) {
+//        return Vec2<T>( F(vec1.x,vec2.x),F(vec1.y,vec2.y) );
+//    }
 
     template<class T>
-    inline bool isinf_any(Vec2<T> vec) {
-        return std::isinf(vec.x) || std::isinf(vec.y);
-    }
-
-    template<class T>
-    inline bool iszer_any(Vec2<T> vec) {
-        return (vec.x == 0) || (vec.y == 0);
-    }
-
-    template<class T>
-    inline bool isneg_any(Vec2<T> vec) {
-        return (vec.x < 0) || (vec.y < 0);
-    }
-
-    template<class T>
-    inline bool ispos_any(Vec2<T> vec) {
-        return (vec.x > 0) || (vec.y > 0);
-    }
-
-    template<class T> Vec2<T> abs( Vec2<T> vec ) {
-        return Vec2<T>(std::abs(vec.x),std::abs(vec.y));
-    }
-
-    template<class T> Vec2<T> round( Vec2<T> vec ) {
-        return Vec2<T>(std::round(vec.x),std::round(vec.y));
-    }
-
-    template<class T> Vec2<T> floor( Vec2<T> vec ) {
-        return Vec2<T>(std::round(vec.x),std::round(vec.y));
-    }
-
-    template<class T> Vec2<T> ceil( Vec2<T> vec ) {
-        return Vec2<T>(std::round(vec.x),std::round(vec.y));
-    }
-
-    template<class T,T(F)(T)> Vec2<T> apply(Vec2<T> vec) {
-        return Vec2<T>( F(vec.x),F(vec.y) );
-    }
-
-    template<class T,T(F)(T,T)> Vec2<T> apply(Vec2<T> vec1, Vec2<T> vec2) {
-        return Vec2<T>( F(vec1.x,vec2.x),F(vec1.y,vec2.y) );
-    }
-
-    template<class T> T
-    inline min (T v1, T v2) {
+    T
+    inline min(T v1, T v2) {
         return v1 > v2 ? v2 : v1;
     }
 
-    template<class T> T
-    inline max (T v1, T v2) {
+    template<class T>
+    T
+    inline max(T v1, T v2) {
         return v1 > v2 ? v1 : v2;
+    }
+
+    template<class T>
+    Vec2<T> min(Vec2<T> v1, Vec2<T> v2) {
+        return Vec2<T>(v1.x > v2.x ? v2.x : v1.x, v1.y > v2.y ? v2.y : v1.y);
+    }
+
+    template<class T>
+    Vec2<T> max(Vec2<T> v1, Vec2<T> v2) {
+        return Vec2<T>(v1.x > v2.x ? v1.x : v2.x, v1.y > v2.y ? v1.y : v2.y);
+    }
+
+    template<class T>
+    Vec2<bool> isnan(Vec2<T> v) {
+        return Vec2<bool>(std::isnan(v.x), std::isnan(v.y));
+    }
+
+    template<class T>
+    Vec2<bool> isinf(Vec2<T> v) {
+        return Vec2<bool>(std::isinf(v.x), std::isinf(v.y));
+    }
+
+    template<class T>
+    Vec2<T> abs(Vec2<T> v) {
+        return Vec2<T>(std::abs(v.x), std::abs(v.y));
+    }
+
+    template<class T>
+    Vec2<T> floor(Vec2<T> v) {
+        return Vec2<T>(std::floor(v.x), std::floor(v.y));
+    }
+
+    template<class T>
+    Vec2<T> ceil(Vec2<T> v) {
+        return Vec2<T>(std::ceil(v.x), std::ceil(v.y));
+    }
+
+    template<class T>
+    Vec2<T> round(Vec2<T> v) {
+        return Vec2<T>(std::round(v.x), std::round(v.y));
     }
 
 }

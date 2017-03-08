@@ -5,6 +5,7 @@
 #ifndef PLAYIN_GUIWINDOW_H
 #define PLAYIN_GUIWINDOW_H
 
+#include <gui/GuiTextureView.h>
 #include "GuiFrame.h"
 #include "GuiButton.h"
 #include "GuiFactory.h"
@@ -48,7 +49,7 @@ public:
     std::shared_ptr<GuiView> viewGui;
 
     GuiWindow(const std::weak_ptr<GuiWindow>&& i_self,
-              constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_TEXTURE) : GuiFrame(i_self,i_cull_mode) {
+              constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_SCISSOR) : GuiFrame(i_self, i_cull_mode) {
         std::cout << "Gui window created!" << std::endl;
 
         dragging = false;
@@ -58,8 +59,15 @@ public:
         closeBtn = GuiFactory::create<CloseButton>();
         add(closeBtn);
 
-        workFrame = GuiFactory::create<GuiFrame>();
+        workFrame = GuiFactory::create<GuiFrame>(constants::CULL_SCISSOR);
         add(workFrame);
+
+        std::shared_ptr<GuiTextureView> tw = GuiFactory::create<GuiTextureView>();
+
+        tw->setPositionMin(Vec2i(-10, -10));
+        tw->setSizeMin(Vec2i(50, 50));
+
+        workFrame->add(tw);
 
         closeBtn->MouseClickEvent.connect_weak(&GuiWindow::OnCloseButtonClick, self, this);
     }

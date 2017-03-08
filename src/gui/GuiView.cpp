@@ -5,7 +5,10 @@
 #include "GuiView.h"
 #include "ProjectionManager.h"
 
-GuiView::GuiView(const std::weak_ptr<GuiView>&& i_self) : GuiBase(i_self) {
+GuiView::GuiView(const std::weak_ptr<GuiView> &&i_self) :
+        highlight_step(8),
+        dragging(false),
+        GuiBase(i_self) {
     position = Vec2d::ZERO;
 
     setScaleMin(Vec2d(0.000001,0.000001));
@@ -26,13 +29,13 @@ GuiView::GuiView(const std::weak_ptr<GuiView>&& i_self) : GuiBase(i_self) {
 void GuiView::setScale(Vec2d i_scale) {
 
     // fool proof
-    if (mutils::isinf_any(i_scale) || mutils::isnan_any(i_scale)) return;
+    if (mutils::isnan(i_scale).any() || mutils::isinf(i_scale).any()) return;
 
     scale.x = mutils::clamp(scale.x,scale_min.x,scale_max.x);
     scale.y = mutils::clamp(scale.y,scale_min.y,scale_max.y);
 
     scale = i_scale;
-    scale_inv = 1.0/scale;
+    scale_inv = Vec2d(1, 1) / scale;
 
     Update();
 }
@@ -40,7 +43,7 @@ void GuiView::setScale(Vec2d i_scale) {
 void GuiView::setScaleMin(Vec2d i_scale_min) {
 
     // fool proof
-    if (mutils::isinf_any(i_scale_min) || mutils::isnan_any(i_scale_min)) return;
+    if (mutils::isnan(i_scale_min).any() || mutils::isinf(i_scale_min).any()) return;
 
     scale_min = i_scale_min;
 
@@ -51,7 +54,8 @@ void GuiView::setScaleMin(Vec2d i_scale_min) {
 void GuiView::setScaleMax(Vec2d i_scale_max) {
 
     // fool proof
-    if (mutils::isinf_any(i_scale_max) || mutils::isnan_any(i_scale_max)) return;
+    if (mutils::isnan(i_scale_max).any() || mutils::isinf(i_scale_max).any()) return;
+
 
     scale_max = i_scale_max;
 
@@ -97,7 +101,10 @@ void GuiView::OnMouseEvent(int button, int state, Vec2d mousePos) {
 }
 
 void GuiView::setPosition(Vec2d pos) {
-    if (mutils::isinf_any(pos) || mutils::isnan_any(pos)) return;
+
+    // fool proof
+    if (mutils::isnan(pos).any() || mutils::isinf(pos).any()) return;
+
 
     position = pos;
 
@@ -118,33 +125,24 @@ void GuiView::OnMouseMove(Vec2d mousePos) {
 void GuiView::draw() {
     draw_background();
 
-    Vec2i p1 = ProjectionManager::project_i(Vec2d::ZERO);
-    Vec2i p2 = ProjectionManager::project_i(getSize());
-
-    Vec2i min = Vec2i::apply<mutils::min>(p1,p2);
-    Vec2i max = Vec2i::apply<mutils::max>(p1,p2);
-
-
-//    Vec2i size = ProjectionManager::project_size(Vec2d::ZERO,getSize());// Vec2d(p2.x-p1.x,p1.y-p2.y);
-//
-//    if (size != ProjectionManager::SCR_SIZE) {
-//        print("Coordinates:", p1, p2);
-//        print("Screen size:", ProjectionManager::SCR_SIZE);
-//        print("Calculated size:", size);
-//        print();
-//    }
-
-    //print("Difference: ")
-
     {
-        //print(min,max);
 
-        //safeScissor sc(min.x,min.y,max.x-min.x,max.y-min.y);
         safePushMatrix mat;
+
+        Vec2i p1 = ProjectionManager::project_i(Vec2d::ZERO);
+        Vec2i p2 = ProjectionManager::project_i(getSize());
+
+        Vec2i size = mutils::abs(p1 - p2);
+        Vec2i pos_min = Vec2i::apply<mutils::min>(p1, p2);
+
+        ProjectionManager::pushScissor();
+        ProjectionManager::setScissorClamped(pos_min, size);
 
         glTranslate(position);
         glScale(scale_inv);
         localDraw();
+
+        ProjectionManager::popScissor();
     }
 
     draw_grids();
@@ -216,10 +214,11 @@ void GuiView::draw_grids() {
 
     draw_grid(cell_size,min_displayed_cell_size_x, true, grid_primary_color, background_color,5);
 
-    draw_grid(cell_size*highlight_step,min_displayed_cell_size_x*highlight_step, true, grid_secondary_color, grid_primary_color,4);
+    draw_grid(cell_size * highlight_step, min_displayed_cell_size_x * highlight_step, true, grid_secondary_color,
+              grid_primary_color, 4);
 
-    draw_grid(cell_size*highlight_step*highlight_step,min_displayed_cell_size_x*highlight_step*highlight_step,
-              true, grid_third_color, grid_secondary_color,3);
+    draw_grid(cell_size * highlight_step * highlight_step, min_displayed_cell_size_x * highlight_step * highlight_step,
+              true, grid_third_color, grid_secondary_color, 3);
 
 
     glColor(grid_pivot_color);

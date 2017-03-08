@@ -8,6 +8,7 @@
 #include <Vec2d.h>
 #include <array>
 #include <stack>
+#include <cassert>
 
 #include "glutUtils.h"
 
@@ -22,8 +23,6 @@ private:
 public:
 
     static Vec2i SCR_SIZE;
-    static Vec2i VP_SIZE;
-    static Vec2i VP_OFFSET;
     static Vec2d OBJ_SCALE;
 
     static Vec2i scissor_offset;
@@ -54,6 +53,10 @@ public:
 
         vp_offset = offset;
         vp_size = size;
+
+
+        resetScissor();
+
         //vp_scale = scale;
 
         glMatrixMode(GL_PROJECTION);
@@ -78,22 +81,59 @@ public:
 
     };
 
+    static void resetScissor() {
+        scissor_offset = Vec2i::ZERO;
+        scissor_size = vp_size;
+    }
+
     static void setScissor(Vec2i offset, Vec2i size) {
 
         scissor_offset = offset;
         scissor_size = size;
 
         glEnable(GL_SCISSOR_TEST);
-        glScissor(offset.x,offset.y,size.x,size.y);
+
+        //print("Setting scissor to",offset,size);
+
+        glScissor(offset.x, offset.y + 1, size.x, size.y);
+
+    }
+
+    static void setScissorClamped(Vec2i offset, Vec2i size) {
+
+        const Vec2i &p1 = scissor_offset;
+        Vec2i p2 = p1 + scissor_size;
+
+        Vec2i new_p1 = mutils::max(p1, offset);// Vec2i::apply<mutils::max>(p1,offset);
+        Vec2i new_p2 = mutils::min(p2, offset + size); //Vec2i::apply<mutils::min>(p2,offset+size);
+
+        if (new_p2.x < new_p1.x)
+            new_p2.x = new_p1.x;
+        if (new_p2.y < new_p1.y) {
+            new_p2.y = new_p1.y;
+        }
+
+        scissor_offset = new_p1;
+        scissor_size = new_p2 - new_p1;
+
+        glEnable(GL_SCISSOR_TEST);
+
+        //print("Setting scissor to",offset,size);
+
+        glScissor(scissor_offset.x, scissor_offset.y + 1, scissor_size.x, scissor_size.y);
 
     }
 
     static void pushScissor() {
+        //print("Scissor pushed. current values:",scissor_offset,scissor_size);
+
         scissor_offset_stack.push(scissor_offset);
         scissor_size_stack.push(scissor_size);
     }
 
     static void popScissor() {
+
+        //print("Scissor poped, Setting scissor to",scissor_offset_stack.top(),scissor_size_stack.top());
 
         setScissor(scissor_offset_stack.top(), scissor_size_stack.top());
         scissor_offset_stack.pop();
@@ -108,6 +148,7 @@ public:
 
     static void pushViewportProjection() {
 
+        pushScissor();
         vp_offset_stack.push(vp_offset);
         vp_size_stack.push(vp_size);
         //vp_scale_stack.push(vp_scale);
@@ -122,6 +163,7 @@ public:
     static void popViewportProjection() {
 
         setViewportProjection( vp_offset_stack.top(),vp_size_stack.top() );
+        popScissor();
 
         vp_offset_stack.pop();
         vp_size_stack.pop();
@@ -144,7 +186,7 @@ public:
 
     // Get size of viewport in object coordinates
     static Vec2d getViewportObjSize() {
-        return mutils::abs( unProject( getViewportPosition()+getViewportSize() )-getViewportObjPosition() );
+        return Vec2d::apply<std::abs>(unProject(getViewportPosition() + getViewportSize()) - getViewportObjPosition());
     }
 
     // Get

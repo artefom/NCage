@@ -10,6 +10,7 @@
 #include <glew.h>
 #include <freeglut.h>
 #include <iostream>
+#include <cstdint>
 
 #include "Vec2d.h"
 #include "mathUtils.h"
@@ -18,20 +19,15 @@ class Color {
 
 public:
 
-    union {
-        unsigned int code;
-        struct {
-            unsigned char r;
-            unsigned char g;
-            unsigned char b;
-            unsigned char a;
-        };
-    };
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
+    uint8_t a;
 
 
     Color();
 
-    Color(unsigned char i_r, unsigned char i_g, unsigned char i_b, unsigned char i_a = 255);
+    Color(uint8_t i_r, uint8_t i_g, uint8_t i_b, uint8_t i_a = 255);
 
     // Initialization of color by hex number in c_string
     Color(const char* str);
@@ -40,13 +36,13 @@ public:
     Color(std::string str);
 
     static Color mix(Color c1, Color c2, double alpha) {
-        unsigned char r = (unsigned char)mutils::clamp( c1.r*(1-alpha)+c2.r*alpha, 0, 255);
-        unsigned char g = (unsigned char)mutils::clamp( c1.g*(1-alpha)+c2.g*alpha, 0, 255);
-        unsigned char b = (unsigned char)mutils::clamp( c1.b*(1-alpha)+c2.b*alpha, 0, 255);
+        uint8_t r = (uint8_t) mutils::clamp(c1.r * (1 - alpha) + c2.r * alpha, 0, 255);
+        uint8_t g = (uint8_t) mutils::clamp(c1.g * (1 - alpha) + c2.g * alpha, 0, 255);
+        uint8_t b = (uint8_t) mutils::clamp(c1.b * (1 - alpha) + c2.b * alpha, 0, 255);
         return Color(r,g,b);
     }
 
-    inline static Color gray(unsigned char intensity) {
+    inline static Color gray(uint8_t intensity) {
         return Color(intensity,intensity,intensity);
     }
 
