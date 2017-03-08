@@ -10,7 +10,7 @@ void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
     GuiBase::OnMouseEvent(button,state,mousePos);
 
 
-    if (state == 1) {
+    if (state == GLFW_RELEASE) {
         auto it = ClickedGuis.find(button);
         if (it != ClickedGuis.end()) {
             std::shared_ptr<GuiBase> &ClickedGui = it->second;
@@ -31,7 +31,7 @@ void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
         if ( v->hasMouse(localMpos) ) {
 
-            if (state == 0) {
+            if (state == GLFW_PRESS) {
 
                 auto it2 = ClickedGuis.find(button);
 
@@ -49,6 +49,12 @@ void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
         }
     }
 
+}
+
+void GuiFrame::OnScroll(Vec2d scale) {
+    if (MouseGui) {
+        MouseGui->OnScroll(scale);
+    }
 }
 
 void GuiFrame::OnMouseEnter() {

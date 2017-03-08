@@ -69,6 +69,8 @@ public:
 
     virtual void OnMouseEvent(int button, int state, Vec2d mousePos);
 
+    virtual void OnScroll(Vec2d size);
+
     void setPosition(Vec2d pos);
 
     virtual void OnMouseMove(Vec2d mousePos);
@@ -107,6 +109,8 @@ private:
     double min_displayed_cell_size_x;
 
     Vec2d pressed_local_position;
+
+    Vec2d last_mouse_position;
 
     void draw_grid(Vec2d cell_size, double min_displayed_cell_size_x, bool dynamic, Color c1, Color c2, int max_level);
 };

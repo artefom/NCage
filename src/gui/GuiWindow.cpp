@@ -88,7 +88,7 @@ void GuiWindow::OnMouseEvent(int button, int state, Vec2d mousePos) {
     GuiFrame::OnMouseEvent(button, state, mousePos);
 
     if (ClickedGuis.find(button) == ClickedGuis.end()) {
-        if (button == 0 && state == 0) {
+        if (button == 0 && state == GLFW_PRESS) {
             dragging = true;
             dragging_pos = mousePos;
         } else {

@@ -51,8 +51,8 @@ void GuiButton::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
     GuiBase::OnMouseEvent(button, state, mousePos);
     // Right mouse down
-    if (button == 0) {
-        if (state == 0) {
+    if (button == GLFW_MOUSE_BUTTON_1) {
+        if (state == GLFW_PRESS) {
             // Mouse down case
             isPressed = true;
         } else {

@@ -41,6 +41,9 @@ public:
     // Mouse Down event
     static void OnMouseDown(int button, int state, Vec2d mouse_pos);
 
+    // Mouse Scroll event
+    static void OnScroll(Vec2d scale);
+
     // Called on resize
     static void OnResize(Vec2d size);
 

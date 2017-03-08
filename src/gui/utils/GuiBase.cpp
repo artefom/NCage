@@ -59,3 +59,7 @@ void GuiBase::drawBuffered() {
     should_update = false;
     draw();
 }
+
+void GuiBase::OnScroll(Vec2d scale) {
+
+}

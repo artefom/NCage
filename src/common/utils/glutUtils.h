@@ -7,10 +7,13 @@
 
 #include <string>
 #include <ios>
+
 #include <glew.h>
-#include <freeglut.h>
+#include <glfw3.h>
+
 #include <iostream>
 #include <cstdint>
+#include <cstring>
 
 #include "Vec2d.h"
 #include "mathUtils.h"
@@ -61,7 +64,7 @@ private:
             unsigned long bgra =std::stoul(str, nullptr, 16);
             unsigned char* colors = reinterpret_cast<unsigned char*>(&bgra);
 
-            size_t str_length = strlen(str);
+            size_t str_length = std::strlen(str);
             if (str_length <= 8) {
                 r = colors[2];
                 g = colors[1];

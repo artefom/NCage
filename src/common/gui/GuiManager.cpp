@@ -23,6 +23,13 @@ void GuiManager::OnMouseDown(int button, int state, Vec2d mouse_pos) {
     BackgroundWorker::input_events.enqueue(button);
 }
 
+void GuiManager::OnScroll(Vec2d scale) {
+
+    GuiRoot->OnScroll(scale);
+
+}
+
+
 void GuiManager::terminate() {
 
 }

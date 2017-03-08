@@ -114,6 +114,10 @@ public:
     // Also, calles Update()
     virtual void afterResize();
 
+
+    // Mouse Scroll occured!
+    virtual void OnScroll(Vec2d scale);
+
 };
 
 

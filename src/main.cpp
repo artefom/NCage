@@ -1,23 +1,31 @@
 #include <iostream>
 #include <thread>
 #include <queue>
-#include <glutUtils.h>
 
-#define gui(x) cout << string("GUI: ")+string(x)+string("\n");
+#include "glutUtils.h"
 
+#include <stdlib.h>
 
-#include "resources/constants.h"
-#include "SafeQueue.h"
-#include "BackgroundWorker.h"
-#include "GuiManager.h"
+#define _USE_MATH_DEFINES
+
+#include <gui/GuiManager.h>
 
 using namespace std;
 
-void PassiveMouseMove(int x, int y);
+void error_callback(int error, const char *description);
+
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
+
+void mouse_move_callback(int x, int y);
+
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods);
+
+void scroll_callback(GLFWwindow *window, double x, double y);
 
 void renderScene(void);
 
-void resize(int w, int h);
+void resize_callback(int w, int h);
 
 void MouseFunc(int button, int state, int x, int y);
 
@@ -25,67 +33,130 @@ void glutCloseFunc();
 
 void setupProjection(int w, int h);
 
-thread bg_thread;
+int main(int argc, char **argv) {
 
-int main(int argc, cstring argv[]) {
+    // Creating window, setting context
 
-    glutInit(&argc, argv);
+    cout << "Hello, this is test program!" << endl;
 
-    Vec2i window_size = Vec2i(512,512);
+    if (!glfwInit()) {
+        cout << "Init failed!" << endl;
+        exit(-1);
+    }
 
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA );
-    glutInitWindowPosition(100, 100);
-    glutInitWindowSize(window_size.x, window_size.y);
+    glfwSetErrorCallback(error_callback);
 
-    //glEnable(GL_SCISSOR_TEST);
-    glShadeModel(GL_FLAT);                      // shading mathod: GL_SMOOTH or GL_FLAT
-    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);      // 4-byte pixel alignment
 
-    glDisable(GL_LIGHTING);
+    // Window properties
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 
-    glutCreateWindow("Ass class destroyer");
+    GLFWwindow *window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
+    if (!window) {
+        cout << "Failed to create window!" << endl;
+    }
 
+    glfwMakeContextCurrent(window);
+
+    // Loading OpenGL API
+    glewExperimental = GL_TRUE;
     GLenum glewinit = glewInit();
     if (glewinit != GLEW_OK) {
         std::cout << "Glew not okay! " << glewinit;
         exit(-1);
     }
 
-    gui("Registerring mouse callbacks");
+    cout << "Everything is fine!" << endl;
 
-    glutDisplayFunc(renderScene);
+    cout << "Running main loop!" << endl;
 
-    glutPassiveMotionFunc(PassiveMouseMove);
-    glutMotionFunc(PassiveMouseMove);
-    glutMouseFunc(MouseFunc);
+    // Registering callbacks
 
-    glutReshapeFunc(resize);
-    glutIdleFunc(renderScene);
-    glutCloseFunc(glutCloseFunc);
+    glfwSetKeyCallback(window, key_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+    // Running main loop
+
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+
+    glViewport(0, 0, width, height);
+    //glClearColor((float)xpos/1000.0,(float)ypos/1000.0,0,1);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, 1, 1, 0, 1, -1);
+
+    glDisable(GL_LIGHTING);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDisable(GL_LIGHTING);
+
+    glDisable(GL_SCISSOR_TEST);
+
+    Vec2d old_mouse_pos;
+    Vec2d mouse_pos;
+    Vec2i old_screen_size;
+    Vec2i screen_size;
+
 
     GuiManager::Init();
 
-    bg_thread = thread(run_background_thread);
+    //bg_thread = thread(run_background_thread);
 
-    setupProjection(window_size.x,window_size.y);
+    glfwGetFramebufferSize(window, &screen_size.x, &screen_size.y);
+    setupProjection(screen_size.x, screen_size.y);
+    old_screen_size = screen_size;
 
     GuiManager::PostInit();
 
-    glutMainLoop();
+    GuiManager::OnResize(ProjectionManager::getViewportObjSize());
 
-    return 0;
+    while (!glfwWindowShouldClose(window)) {
+
+        glfwWaitEventsTimeout(0.001);
+        //print("Drawn!");
+        glfwGetFramebufferSize(window, &screen_size.x, &screen_size.y);
+        glfwGetCursorPos(window, &mouse_pos.x, &mouse_pos.y);
+
+        if (screen_size.x != old_screen_size.x || screen_size.y != old_screen_size.y) {
+            resize_callback(screen_size.x, screen_size.y);
+            old_screen_size = screen_size;
+        }
+
+        if (mouse_pos.x != old_mouse_pos.x || mouse_pos.y != old_mouse_pos.y) {
+            mouse_move_callback((int) mouse_pos.x, (int) mouse_pos.y);
+            old_mouse_pos = mouse_pos;
+        }
+
+        //glfwPollEvents();
+
+        renderScene();
+
+        //std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
+
+    glfwDestroyWindow(window);
+
+    glfwTerminate();
+    exit(0);
 }
 
-void glutCloseFunc() {
-
-    BackgroundWorker::input_events.enqueue(-1);
-    bg_thread.join();
-
-    GuiManager::terminate();
-
+void error_callback(int error, const char *description) {
+    fprintf(stderr, "Error: %s\n", description);
 }
 
-void PassiveMouseMove(int x, int y) {
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+}
+
+void mouse_move_callback(int x, int y) {
 
     Vec2d local_mpos = ProjectionManager::unProjectMouse( Vec2i(x,y) );
 
@@ -104,10 +175,7 @@ void renderScene(void) {
 
     GuiManager::draw();
 
-    glutPostRedisplay();
     glFlush();
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
 void setupProjection(int w, int h) {
@@ -121,7 +189,7 @@ void setupProjection(int w, int h) {
     ProjectionManager::setViewportProjection(Vec2i::ZERO,size_i);
 }
 
-void resize(int w, int h) {
+void resize_callback(int w, int h) {
 
     setupProjection(w,h);
 
@@ -129,10 +197,21 @@ void resize(int w, int h) {
 
 }
 
-void MouseFunc(int button, int state, int x, int y) {
+void mouse_button_callback(GLFWwindow *window, int button, int action, int mods) {
 
-    Vec2d local_mpos = ProjectionManager::unProjectMouse(Vec2i(x,y));
+    double x;
+    double y;
 
-    GuiManager::OnMouseDown(button, state, local_mpos);
+    glfwGetCursorPos(window, &x, &y);
+
+    Vec2d local_mpos = ProjectionManager::unProjectMouse(Vec2i((int) x, (int) y));
+
+    GuiManager::OnMouseDown(button, action, local_mpos);
+
+}
+
+void scroll_callback(GLFWwindow *window, double x, double y) {
+
+    GuiManager::OnScroll(Vec2d(x, y));
 
 }

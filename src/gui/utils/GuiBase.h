@@ -108,6 +108,8 @@ public:
 
     virtual void OnMouseLeave();
 
+    virtual void OnScroll(Vec2d scale);
+
     // Estimates weather mouse lies within current gui
     // Mousepos is in local coordinates
     virtual bool hasMouse(Vec2d mousepos);

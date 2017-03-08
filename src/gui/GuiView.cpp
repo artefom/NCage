@@ -84,15 +84,12 @@ void GuiView::rescale(double value, Vec2d pivot) {
 
 void GuiView::OnMouseEvent(int button, int state, Vec2d mousePos) {
 
-    if (state == 1) {
+    if (state == GLFW_RELEASE) {
         if (button == 0) {
             dragging = false;
         }
         return;
     }
-
-    if (button == 3) rescale(1.1,mousePos);
-    if (button == 4) rescale(1.0/1.1,mousePos);
 
     if (button == 0) {
         dragging = true;
@@ -113,6 +110,8 @@ void GuiView::setPosition(Vec2d pos) {
 }
 
 void GuiView::OnMouseMove(Vec2d mousePos) {
+
+    last_mouse_position = mousePos;
 
     if (dragging) {
         Vec2d newPos = screenToLocal(mousePos);
@@ -315,5 +314,13 @@ void GuiView::localMouseEvent(int button, int state, Vec2d pos) {
 
 void GuiView::localMouseMove(Vec2d pos) {
 
+}
+
+void GuiView::OnScroll(Vec2d size) {
+
+    if (size.y > 0) rescale(1.1 * size.y, last_mouse_position);
+    if (size.y < 0) rescale(1.0 / (-size.y * 1.1), last_mouse_position);
+
+    GuiBase::OnScroll(size);
 }
 
