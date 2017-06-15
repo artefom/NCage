@@ -15,6 +15,7 @@
 #include <GuiTextureView.h>
 #include <stack>
 #include <GuiView.h>
+#include <VBOTest/VBOTest.h>
 
 #include "GuiBase.h"
 

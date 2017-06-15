@@ -2,6 +2,7 @@
 // Created by artef on 27.02.2017.
 //
 
+#include <Logger.h>
 #include "GuiButton.h"
 
 GuiButton::GuiButton(const std::weak_ptr<GuiButton> &&i_self) : GuiBase(i_self) {
@@ -34,7 +35,7 @@ void GuiButton::draw() {
 }
 
 void GuiButton::OnClick() {
-    std::cout << "Hello, i'm button!" << std::endl;
+    Logger::info("Button pressed!");
 }
 
 void GuiButton::OnMouseEnter() {

@@ -84,6 +84,11 @@ public:
 
     virtual void afterResize();
 
+    /**
+     * Function is overriden in child class,
+     * deals with projection setup, scissor setup, viewport setup, texture setup for
+     * rendering into specififc texture (some kind of bufferization)
+     */
     virtual void pushBuffer() {
 
     };

@@ -2,6 +2,7 @@
 // Created by artef on 27.02.2017.
 //
 
+#include <Logger.h>
 #include "GuiWindow.h"
 
 GuiWindow::CloseButton::CloseButton(const std::weak_ptr<GuiWindow::CloseButton> &&i_self) : GuiButton(i_self) {}
@@ -20,7 +21,7 @@ void GuiWindow::CloseButton::draw() {
 
 GuiWindow::GuiWindow(const std::weak_ptr<GuiWindow> &&i_self, constants::FRAME_CULL_MODE i_cull_mode) : GuiFrame(i_self,
                                                                                                                  i_cull_mode) {
-    std::cout << "Gui window created!" << std::endl;
+    Logger::info("Gui window created");
 
     dragging = false;
     padding_top = Vec2d(4, 15);
@@ -110,5 +111,5 @@ void GuiWindow::OnMouseMove(Vec2d mousePos) {
 }
 
 void GuiWindow::OnCloseButtonClick() {
-    std::cout << "Closing window!" << std::endl;
+    Logger::info("Closing window!");
 }

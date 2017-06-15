@@ -7,6 +7,7 @@
 
 #include <ProjectionManager.h>
 #include <cassert>
+#include <Logger.h>
 #include "glutUtils.h"
 #include "AttributeStack.h"
 
@@ -47,7 +48,7 @@ public:
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glGenTextures(1, &texId);
-        print("Texture created");
+        Logger::info("Texture created");
         glBindTexture(GL_TEXTURE_2D, texId);
         //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

@@ -37,10 +37,16 @@ int main(int argc, char **argv) {
 
     // Creating window, setting context
 
-    cout << "Hello, this is test program!" << endl;
+    Logger::setLogErrors(true);
+    Logger::setLogInfo(true);
+    Logger::setLogWarnings(true);
+    Logger::setLogStream(std::cout);
+    Logger::logFile("log.txt");
+
+    Logger::info("Hello, this is test program!");
 
     if (!glfwInit()) {
-        cout << "Init failed!" << endl;
+        Logger::info("Init failed!");
         exit(-1);
     }
 
@@ -49,12 +55,12 @@ int main(int argc, char **argv) {
 
     // Window properties
     glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, constants::opengl_version_major);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, constants::opengl_version_minor);
 
     GLFWwindow *window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
     if (!window) {
-        cout << "Failed to create window!" << endl;
+        Logger::warning("Failed to create window!");
     }
 
     glfwMakeContextCurrent(window);
@@ -63,13 +69,11 @@ int main(int argc, char **argv) {
     glewExperimental = GL_TRUE;
     GLenum glewinit = glewInit();
     if (glewinit != GLEW_OK) {
-        std::cout << "Glew not okay! " << glewinit;
+        Logger::error("Glew init error code: ", glewinit);
         exit(-1);
+    } else {
+        Logger::info("Glut init success!");
     }
-
-    cout << "Everything is fine!" << endl;
-
-    cout << "Running main loop!" << endl;
 
     // Registering callbacks
 
@@ -117,10 +121,12 @@ int main(int argc, char **argv) {
 
     GuiManager::OnResize(ProjectionManager::getViewportObjSize());
 
+    Logger::info("Running main loop!");
+
     while (!glfwWindowShouldClose(window)) {
 
         glfwWaitEventsTimeout(0.001);
-        //print("Drawn!");
+
         glfwGetFramebufferSize(window, &screen_size.x, &screen_size.y);
         glfwGetCursorPos(window, &mouse_pos.x, &mouse_pos.y);
 
@@ -137,6 +143,7 @@ int main(int argc, char **argv) {
         //glfwPollEvents();
 
         renderScene();
+        VBOTest::Drawrect(Vec2d(0, 0), Vec2d(2, 2));
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }

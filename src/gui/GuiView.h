@@ -12,6 +12,11 @@
 #include <stdlib.h>
 #include "GuiBase.h"
 
+/**
+ * Gui, supporting local draw function and mouse zoom\translations
+ * Can be used for various tasks, including texture display, neural
+ * network display and so on...
+ */
 class GuiView : public GuiBase {
 public:
 

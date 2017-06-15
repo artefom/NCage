@@ -15,6 +15,9 @@ namespace constants {
     const Color gui_close_button_hover("0x76ff05");
     const Color gui_close_button_pressed("0x193501");
 
+    const int opengl_version_minor = 3;
+    const int opengl_version_major = 3;
+
     enum FRAME_CULL_MODE {
         CULL_NONE,
         CULL_SCISSOR,

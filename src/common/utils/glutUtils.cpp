@@ -26,6 +26,3 @@ Color::Color(const char *str) {
 Color::Color(std::string str) {
     from_string( str.c_str() );
 }
-
-
-void print() {std::cout<<'\n';}

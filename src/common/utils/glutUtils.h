@@ -8,6 +8,8 @@
 #include <string>
 #include <ios>
 
+//#define GLEW_STATIC
+
 #include <glew.h>
 #include <glfw3.h>
 
@@ -137,15 +139,6 @@ inline void drawHRect(Vec2d p1, Vec2d p2) {
     glVertex2d(p2.x, p2.y);
     glVertex2d(p1.x, p2.y);
     glEnd();
-}
-
-void print();
-
-template<typename T, typename ...TAIL>
-void print(const T &t, TAIL... tail)
-{
-    std::cout<<t<<' ';
-    print(tail...);
 }
 
 template<GLenum T>
