@@ -108,6 +108,7 @@ int main(int argc, char **argv) {
     Vec2i old_screen_size;
     Vec2i screen_size;
 
+    //ShaderLoader::Init();
 
     GuiManager::Init();
 
@@ -143,7 +144,7 @@ int main(int argc, char **argv) {
         //glfwPollEvents();
 
         renderScene();
-        VBOTest::Drawrect(Vec2d(0, 0), Vec2d(2, 2));
+        //VBOTest::Drawrect(Vec2d(0, 0), Vec2d(2, 2));
 
         //std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }

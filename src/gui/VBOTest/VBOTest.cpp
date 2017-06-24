@@ -7,3 +7,4 @@
 bool VBOTest::initialized = false;
 VBOMesh VBOTest::mesh;
 GLuint VBOTest::vao;
+RenderPrimitive VBOTest::render_piece;

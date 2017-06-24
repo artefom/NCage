@@ -112,7 +112,7 @@ public:
         if (initialized) Destroy();
     }
 
-    void bind() {
+    void bind() const {
 
         assert(isInitialized());
 
@@ -123,7 +123,7 @@ public:
 
     }
 
-    void unbind() {
+    static void unbind() {
         ProjectionManager::popViewportProjection();
         AttributeStack::popFrameBuffer();
     }
@@ -132,11 +132,11 @@ public:
         return initialized;
     }
 
-    GLuint getTexId() {
+    GLuint getTexId() const {
         return texId;
     }
 
-    Vec2i getSize() {
+    Vec2i getSize() const {
         return size;
     }
 };

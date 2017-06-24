@@ -3,6 +3,7 @@
 //
 
 #include <Logger.h>
+#include <render/RenderManager.h>
 #include "GuiButton.h"
 
 GuiButton::GuiButton(const std::weak_ptr<GuiButton> &&i_self) : GuiBase(i_self) {
@@ -18,19 +19,20 @@ GuiButton::GuiButton(const std::weak_ptr<GuiButton> &&i_self) : GuiBase(i_self) 
 }
 
 void GuiButton::draw() {
+
     if (isPressed && isHovered) {
-        glColor(constants::gui_button_pressed);
+        RenderManager::color(constants::gui_button_pressed);
     } else if (!isPressed && isHovered) {
-        glColor(constants::gui_button_hover);
+        RenderManager::color(constants::gui_button_hover);
     } else {
-        glColor(constants::gui_frame_foreground);
+        RenderManager::color(constants::gui_frame_background);
     }
 
-    drawRect(Vec2d::ZERO, getSize());
+    RenderManager::drawrect(Vec2d::ZERO, getSize());
 
-    glColor(constants::gui_frame_accent1);
+    RenderManager::color(constants::gui_frame_accent1);
 
-    drawHRect(Vec2d::ZERO, getSize());
+    RenderManager::drawhrect(Vec2d::ZERO, getSize());
 
 }
 

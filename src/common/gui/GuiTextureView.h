@@ -6,6 +6,7 @@
 #define PLAYIN_TEXTUREDISPLAY_H
 
 #include <ProjectionManager.h>
+#include <render/RenderManager.h>
 #include "glutUtils.h"
 #include "GuiView.h"
 
@@ -16,8 +17,8 @@ public:
 
     virtual void localDraw() {
 
-        glColor(Color(255,0,0));
-        drawRect(Vec2d(0,0),Vec2d(10,10));
+        RenderManager::color(Color(255, 0, 0));
+        RenderManager::drawrect(Vec2d(0, 0), Vec2d(10, 10));
 
     }
 

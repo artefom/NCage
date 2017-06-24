@@ -94,28 +94,6 @@ inline void glVertex(Vec2<float> v) {
     glVertex2f(v.x,v.y);
 }
 
-inline void drawRect(Vec2<double> p1, Vec2<double> p2) {
-    glBegin(GL_QUADS);
-    glVertex2d(p1.x, p1.y);
-    glVertex2d(p2.x, p1.y);
-    glVertex2d(p2.x, p2.y);
-    glVertex2d(p1.x, p2.y);
-    glEnd();
-}
-
-inline void drawRect(Vec2<float> p1, Vec2<float> p2) {
-    glBegin(GL_QUADS);
-    glVertex2f(p1.x, p1.y);
-    glVertex2f(p2.x, p1.y);
-    glVertex2f(p2.x, p2.y);
-    glVertex2f(p1.x, p2.y);
-    glEnd();
-}
-
-inline void glColor(Color c) {
-    glColor4ub(c.r,c.g,c.b,c.a);
-}
-
 inline void glTranslate(Vec2<double> vec) {
     glTranslated(vec.x,vec.y,0);
 }
@@ -132,14 +110,14 @@ inline void glScale(Vec2<float> vec) {
     glScalef(vec.x,vec.y,0);
 }
 
-inline void drawHRect(Vec2d p1, Vec2d p2) {
-    glBegin(GL_LINE_LOOP);
-    glVertex2d(p1.x, p1.y);
-    glVertex2d(p2.x, p1.y);
-    glVertex2d(p2.x, p2.y);
-    glVertex2d(p1.x, p2.y);
-    glEnd();
-}
+//inline void drawHRect(Vec2d p1, Vec2d p2) {
+//    glBegin(GL_LINE_LOOP);
+//    glVertex2d(p1.x, p1.y);
+//    glVertex2d(p2.x, p1.y);
+//    glVertex2d(p2.x, p2.y);
+//    glVertex2d(p1.x, p2.y);
+//    glEnd();
+//}
 
 template<GLenum T>
 class pixelSize;

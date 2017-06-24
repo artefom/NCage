@@ -2,8 +2,8 @@
 // Created by artef on 28.02.2017.
 //
 
+#include <render/RenderManager.h>
 #include "GuiView.h"
-#include "ProjectionManager.h"
 
 GuiView::GuiView(const std::weak_ptr<GuiView> &&i_self) :
         highlight_step(8),
@@ -148,11 +148,11 @@ void GuiView::draw() {
 
 void GuiView::localDraw() {
 
-    glColor(Color(255,0,0));
-    drawRect( Vec2d::ZERO,Vec2d(20,20) );
+    RenderManager::color(Color(255, 0, 0));
+    RenderManager::drawrect(Vec2d::ZERO, Vec2d(20, 20));
 
-    glColor(Color(0,255,0));
-    drawRect( Vec2d(100,100),Vec2d(120,120) );
+    RenderManager::color(Color(0, 255, 0));
+    RenderManager::drawrect(Vec2d(100, 100), Vec2d(120, 120));
 
     // Draw background
 
@@ -200,9 +200,9 @@ Vec2d GuiView::localToScreen(Vec2d pos) const {
 }
 
 void GuiView::draw_background() {
-    glColor(background_color);
+    RenderManager::color(background_color);
 
-    drawRect(Vec2d::ZERO,getSize());
+    RenderManager::drawrect(Vec2d::ZERO, getSize());
 }
 
 void GuiView::draw_grids() {
@@ -218,19 +218,13 @@ void GuiView::draw_grids() {
               true, grid_third_color, grid_secondary_color, 3);
 
 
-    glColor(grid_pivot_color);
+    RenderManager::color(grid_pivot_color);
     if (pivot.x >= 0 && pivot.x < getSize().x) {
-        glBegin(GL_LINES);
-        glVertex2d(pivot.x,0);
-        glVertex2d(pivot.x,getSize().y);
-        glEnd();
+        RenderManager::drawline(Vec2d(pivot.x, 0), Vec2d(pivot.x, getSize().y));
     }
 
     if (pivot.y >= 0 && pivot.y < getSize().y) {
-        glBegin(GL_LINES);
-        glVertex2d(0,pivot.y);
-        glVertex2d(getSize().x,pivot.y);
-        glEnd();
+        RenderManager::drawline(Vec2d(0, pivot.y), Vec2d(getSize().x, pivot.y));
     }
 }
 
@@ -269,7 +263,7 @@ GuiView::draw_grid(Vec2d cell_size, double min_displayed_cell_size_x, bool dynam
         mixed_color = Color::mix(c2,c1,alpha);
     }
 
-    glColor(mixed_color);
+    RenderManager::color(mixed_color);
 
     // Draw vertical lines
     {
@@ -281,12 +275,9 @@ GuiView::draw_grid(Vec2d cell_size, double min_displayed_cell_size_x, bool dynam
         double y1 = 0;
         double y2 = getSize().y;
 
-        glBegin(GL_LINES);
         for (double x = begin; x < end; x+=step ) {
-            glVertex2d(x,y1);
-            glVertex2d(x,y2);
+            RenderManager::drawline(Vec2d(x, y1), Vec2d(x, y2));
         }
-        glEnd();
     }
 
     {
@@ -299,12 +290,9 @@ GuiView::draw_grid(Vec2d cell_size, double min_displayed_cell_size_x, bool dynam
         double x1 = 0;
         double x2 = getSize().x;
 
-        glBegin(GL_LINES);
         for (double y = begin; y < end; y+=step ) {
-            glVertex2d(x1,y);
-            glVertex2d(x2,y);
+            RenderManager::drawline(Vec2d(x1, y), Vec2d(x2, y));
         }
-        glEnd();
     }
 }
 

@@ -2,6 +2,7 @@
 // Created by artef on 27.01.2017.
 //
 
+#include <render/RenderManager.h>
 #include "GuiFrame.h"
 
 void GuiFrame::OnMouseEvent(int button, int state, Vec2d mousePos) {
@@ -119,27 +120,15 @@ void GuiFrame::draw() {
         {
             safePushMatrix mat;
             glTranslate(v->getPositionMin());
-//
             v->drawBuffered();
-//            v->pushBuffer();
-//            v->draw();
-//            v->popBuffer();
-//
-//            glColor( Color(0,255,0) );
-//            drawRect(Vec2d(0,0),Vec2d(5,5));
         }
 
     }
-//
-//    glColor( Color(255,0,0) );
-//    drawRect(Vec2d(0,0),Vec2d(5,5));
-//
 }
 
 GuiFrame::GuiFrame(const std::weak_ptr<GuiFrame> &&i_self, constants::FRAME_CULL_MODE i_cull_mode) :
         GuiBase(i_self),
         resized(false) {
-    //texture_span = getSize()*0.9;
     setRenderMode(i_cull_mode);
 
 }
@@ -189,12 +178,20 @@ void GuiFrame::updateScissor() {
 
     scissor_min = pos_min;
     scissor_size = size;
-
-    //scissor_size = mutils::abs(max_pos - scissor_min);
 }
 
 constants::FRAME_CULL_MODE GuiFrame::getRenderMode() const {
     return cull_mode;
+}
+
+void GuiFrame::pushBuffer() {
+    cull_tex.bind();
+
+    glPushMatrix();
+
+    glLoadIdentity();
+
+    glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void GuiFrame::popBuffer() {
@@ -214,36 +211,19 @@ void GuiFrame::drawBuffered() {
         }
 
         if (should_update) {
-            pushBuffer();
+            RenderManager::push_texture_context(cull_tex);
             draw();
-            popBuffer();
+            RenderManager::pop_texture_context();
             should_update = false;
         }
 
         Vec2d tex_p1 = Vec2d::ZERO;
         Vec2d tex_p2 = getSize();
 
-        glEnable(GL_TEXTURE_2D);
+        RenderManager::bind_texture(cull_tex.getTexId());
+        RenderManager::drawtexrect(tex_p1, tex_p2);
+        RenderManager::unbind_texture();
 
-        glBindTexture(GL_TEXTURE_2D, cull_tex.getTexId());
-
-        glColor4f(1, 1, 1, 1);
-        glBegin(GL_QUADS);
-
-        //glNormal3f(0, 0, 1);
-
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex2d(tex_p1.x, tex_p1.y);
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex2d(tex_p2.x, tex_p1.y);
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex2d(tex_p2.x, tex_p2.y);
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex2d(tex_p1.x, tex_p2.y);
-
-        glEnd();
-        // unbind texture
-        glBindTexture(GL_TEXTURE_2D, 0);
         glDisable(GL_TEXTURE_2D);
     } else if (cull_mode == constants::CULL_SCISSOR) {
 

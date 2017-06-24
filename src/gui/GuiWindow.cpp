@@ -9,14 +9,14 @@ GuiWindow::CloseButton::CloseButton(const std::weak_ptr<GuiWindow::CloseButton> 
 
 void GuiWindow::CloseButton::draw() {
     if (isPressed && isHovered) {
-        glColor(constants::gui_close_button_pressed);
+        RenderManager::color(constants::gui_close_button_pressed);
     } else if (!isPressed && isHovered) {
-        glColor(constants::gui_close_button_hover);
+        RenderManager::color(constants::gui_close_button_hover);
     } else {
-        glColor(constants::gui_close_button);
+        RenderManager::color(constants::gui_close_button);
     }
 
-    drawRect(Vec2d::ZERO, getSize());
+    RenderManager::drawrect(Vec2d::ZERO, getSize());
 }
 
 GuiWindow::GuiWindow(const std::weak_ptr<GuiWindow> &&i_self, constants::FRAME_CULL_MODE i_cull_mode) : GuiFrame(i_self,
@@ -46,23 +46,24 @@ void GuiWindow::draw() {
     if (cull_mode == constants::CULL_TEXTURE) {
         glBlendFunc(GL_ONE, GL_ONE);
 
-        glColor(constants::gui_frame_foreground);
-        drawRect(Vec2d::ZERO, getSize());
+        RenderManager::color(constants::gui_frame_foreground);
+        RenderManager::drawrect(Vec2d::ZERO, getSize());
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     } else {
-        glColor(constants::gui_frame_foreground);
-        drawRect(Vec2d::ZERO, getSize());
+        RenderManager::color(constants::gui_frame_foreground);
+        RenderManager::drawhrect(Vec2d::ZERO, getSize());
     }
 
 
-    glColor(constants::gui_frame_background);
-    drawRect(workFrame->getPositionMin(), workFrame->getPositionMax());
+    RenderManager::color(constants::gui_frame_background);
+    RenderManager::drawrect(workFrame->getPositionMin(), workFrame->getPositionMax());
 
     GuiFrame::draw();
 
-    glColor(constants::gui_frame_accent1);
-    drawHRect(workFrame->getPositionMin() - ProjectionManager::getPixelSize(), workFrame->getPositionMax());
+    RenderManager::color(constants::gui_frame_accent1);
+    RenderManager::drawhrect(workFrame->getPositionMin() - ProjectionManager::getPixelSize(),
+                             workFrame->getPositionMax());
 
     //glColor(constants::gui_frame_accent1);
     //drawHRect( Vec2d::ZERO, getSize()-ProjectionManager::getPixelSize() );

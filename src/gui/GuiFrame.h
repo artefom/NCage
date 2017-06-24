@@ -46,7 +46,7 @@ public:
 
 
     GuiFrame(const std::weak_ptr<GuiFrame>&& i_self,
-             constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_SCISSOR);
+             constants::FRAME_CULL_MODE i_cull_mode = constants::CULL_TEXTURE);
 
     void setRenderMode(constants::FRAME_CULL_MODE mode);
 
@@ -78,17 +78,7 @@ public:
     // All this is done through FBTexture class with method FBTexture::bind()
     // this method estimates texture size (in pixels) through unprojecting current position
     // see (ProjectionManager::project_i)
-    virtual void pushBuffer() {
-        cull_tex.bind();
-
-        //print(cull_tex.getSize());
-
-        glPushMatrix();
-
-        glLoadIdentity();
-
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
+    virtual void pushBuffer();
 
     // Draws frame and its children into screen or int texture (if pushBuffer was called before)
     virtual void draw();

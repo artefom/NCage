@@ -13,7 +13,7 @@
 
 
 template<class T>
-struct Vec2 {
+struct alignas(1) Vec2 {
 public:
 
 #pragma clang diagnostic push
